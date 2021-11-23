@@ -6,15 +6,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>TransPA.OpenSource</RootNamespace>
-        <PublishReadyToRun>true</PublishReadyToRun>
-        <RuntimeIdentifier>win-x86</RuntimeIdentifier> 
-        <!--
-            win-x86 is the default arch type of a Function App in Azure.
-            
-            If you want to deploy against some other target you could either: 
-            1) Update the RuntimeIdentifier
-            2) Get rid of both PublishReadyToRun and RuntimeIdentifier to make the application portable, with a potentially bigger cold start.
-         -->
     </PropertyGroup>
 
     <ItemGroup>
