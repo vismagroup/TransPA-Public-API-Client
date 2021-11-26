@@ -452,3 +452,12 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+#################################
+# Merged from project file created by IDEA
+
+# Azure Functions localsettings file
+local.settings.json
+
+# JustCode is a .NET coding add-in
+.JustCode
