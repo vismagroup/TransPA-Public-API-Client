@@ -22,14 +22,26 @@ namespace TransPA.OpenSource.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "integrations/datalon")]
             [FromBody] string body, HttpRequest req, ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
+            /*
+             * Read data from TransPA Public API.
+             */
             var salaryCreated = JsonConvert.DeserializeObject<SalaryCreated>(body);
 
             await _publicApiClient.SetAuthenticationHeader(salaryCreated.TenantId);
-            var employee = await _publicApiClient.GetEmployeeAsync(salaryCreated);
 
-            return new OkObjectResult(employee.EmployeeNumber);
+            var salary = await _publicApiClient.GetSalaryAsync(salaryCreated);
+
+            var uri = new Uri(salaryCreated.ResourceUrl);
+
+            var employeeResourceUrl = $"https://{uri.Host}/publicApi/v1/employees/{salary.EmployeeId}";
+            var employee = await _publicApiClient.GetEmployeeAsync(employeeResourceUrl);
+            
+            /*
+             * Integration specific
+             */
+            
+
+            return new OkObjectResult(employee.EmployeeNumber); // Remark: TransPA will not do anything with the return code here. It's essential that you report the status via the API.
         }
     }
 }

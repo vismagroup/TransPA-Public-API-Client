@@ -89,15 +89,37 @@ public class PublicApiClient
             $"https://{Environment.GetEnvironmentVariable(ConfigurationNameConstants.VismaConnectHost)}/connect/token";
     }
 
-    public async Task<Employee> GetEmployeeAsync(SalaryCreated salaryCreated)
+    public async Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated)
     {
         var httpResponseMessage = await _client.GetAsync(salaryCreated.ResourceUrl);
 
         switch (httpResponseMessage.StatusCode)
         {
             case HttpStatusCode.OK:
-                var employee = await httpResponseMessage.Content.ReadAsAsync<Employee>();
-                return employee;
+                return await httpResponseMessage.Content.ReadAsAsync<Salary>();
+            case HttpStatusCode.NotFound:
+                _log.LogError("Salary doesn't exist");
+                break;
+            case HttpStatusCode.Unauthorized:
+                var jsonAsString = await httpResponseMessage.Content.ReadAsStringAsync();
+                _log.LogError($"Unauthorized when reading salary. Response body {jsonAsString}");
+                break;
+            default:
+                _log.LogError($"An error occured when reading the employee from TransPA. HttpStatusCode: {httpResponseMessage.StatusCode}");
+                break;
+        }
+
+        throw new Exception("Failed to read employee");
+    }
+
+    public async Task<Employee> GetEmployeeAsync(string resourceUrl)
+    {
+        var httpResponseMessage = await _client.GetAsync(resourceUrl);
+
+        switch (httpResponseMessage.StatusCode)
+        {
+            case HttpStatusCode.OK:
+                return await httpResponseMessage.Content.ReadAsAsync<Employee>();
             case HttpStatusCode.NotFound:
                 _log.LogError("Employee doesn't exist");
                 break;
