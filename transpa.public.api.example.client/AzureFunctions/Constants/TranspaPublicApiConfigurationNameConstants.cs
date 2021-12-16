@@ -1,4 +1,4 @@
-﻿namespace TransPA.OpenSource;
+﻿namespace TransPA.OpenSource.Constants;
 
 public class TranspaPublicApiConfigurationNameConstants
 {

@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using transpa.api.generated.Model;
+using TransPA.OpenSource.Constants;
 
 namespace TransPA.OpenSource;
 
@@ -135,6 +136,7 @@ public class PublicApiClient
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     [SuppressMessage("ReSharper", "UnusedMember.Local")]
+    [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]
     private class BearerTokenOkResponseBody
     {
         public string access_token { get; set; } = null!;
@@ -144,6 +146,7 @@ public class PublicApiClient
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]
     private class BearerTokenBadRequestResponseBody
     {
         public BearerTokenBadRequestResponseBody(string error)
