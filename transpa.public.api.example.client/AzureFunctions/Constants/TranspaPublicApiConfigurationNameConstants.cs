@@ -1,6 +1,6 @@
 ﻿namespace TransPA.OpenSource;
 
-public class ConfigurationNameConstants
+public class TranspaPublicApiConfigurationNameConstants
 {
     public const string VismaConnectHost = "VismaConnectHost";
     public const string PublicAPIClientId = "publicApiClientId";

@@ -13,6 +13,5 @@ namespace TransPA.OpenSource
             services.AddHttpClient();
             services.AddSingleton<PublicApiClient>();
         }
-    }    
+    }
 }
-
