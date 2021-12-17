@@ -23,11 +23,6 @@ public class AzureFunctionTestFactory
         return request;
     }
 
-    public static ILogger<T> CreateLogger<T>(LoggerTypes type = LoggerTypes.Null)
-    {
-        return (ILogger<T>) CreateLogger(type);
-    }
-
     public static ILogger CreateLogger(LoggerTypes type = LoggerTypes.Null)
     {
         return type == LoggerTypes.List ? new ListLogger() : NullLoggerFactory.Instance.CreateLogger("Null Logger");
