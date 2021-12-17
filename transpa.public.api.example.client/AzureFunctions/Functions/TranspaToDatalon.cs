@@ -12,16 +12,16 @@ namespace TransPA.OpenSource.Functions
 {
     public class TranspaToDatalon
     {
-        private readonly PublicApiClient _publicApiClient;
-        private readonly DatalonApiClient _datalonApiClient;
-        public TranspaToDatalon(PublicApiClient publicApiClient, DatalonApiClient datalonApiClient)
+        private readonly IPublicApiClient _publicApiClient;
+        private readonly IDatalonApiClient _datalonApiClient;
+        public TranspaToDatalon(IPublicApiClient publicApiClient, IDatalonApiClient datalonApiClient)
         {
             _publicApiClient = publicApiClient;
             _datalonApiClient = datalonApiClient;
         }
         
         [FunctionName("DataLon")]
-        public async Task<IActionResult> Run(
+        public async Task<IActionResult> ExportSalaryFromTranspaToDatalon(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "integrations/datalon")]
             [FromBody] string body, HttpRequest req, ILogger log)
         {
@@ -39,9 +39,24 @@ namespace TransPA.OpenSource.Functions
             var employeeResourceUrl = $"https://{uri.Host}/publicApi/v1/employees/{salary.EmployeeId}";
             var employee = await _publicApiClient.GetEmployeeAsync(employeeResourceUrl);
             
+            if (employee.EmployeeNumber == null)
+            {
+                log.LogWarning("EmployeeNumber is not set");
+                // TODO: Report back handled error here in a later ticket
+                return new BadRequestResult();
+            }
+
             /*
              * Integration specific
              */
+            var employeeNumberAsString = employee.EmployeeNumber.Value.ToString();
+            if (!employeeNumberAsString.Length.Equals(6))
+            {
+                log.LogWarning("EmployeeNumber is in an incorrect format");
+                // TODO: Report back handled error here in a later ticket
+                return new BadRequestResult();
+            }
+
             var environmentVariable = Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.RefreshToken) ?? "";
             if (String.IsNullOrEmpty(environmentVariable))
             {
@@ -50,9 +65,10 @@ namespace TransPA.OpenSource.Functions
             }
 
             await _datalonApiClient.SetAuthenticationHeader(environmentVariable); // TODO: Have to be reworked to be able to handle different tenants (singleton problem)
-            
 
-            return new OkObjectResult(employee.EmployeeNumber); // Remark: TransPA will not do anything with the return code here. It's essential that you report the status via the API.
+            var datalonEmployeeId = await _datalonApiClient.GetEmployeeIdAsync(employeeNumberAsString, "62000059");
+
+            return new OkObjectResult(datalonEmployeeId); // Remark: TransPA will not do anything with the return code here. It's essential that you report the status via the API.
         }
     }
 }

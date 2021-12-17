@@ -11,8 +11,8 @@ namespace TransPA.OpenSource
         {
             var services = builder.Services;
             services.AddHttpClient();
-            services.AddSingleton<PublicApiClient>();
-            services.AddSingleton<DatalonApiClient>();
+            services.AddSingleton<IPublicApiClient, PublicApiClient>();
+            services.AddSingleton<IDatalonApiClient, DatalonApiClient>();
         }
     }
 }

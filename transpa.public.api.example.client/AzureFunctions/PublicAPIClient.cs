@@ -9,7 +9,14 @@ using TransPA.OpenSource.Constants;
 
 namespace TransPA.OpenSource;
 
-public class PublicApiClient
+public interface IPublicApiClient
+{
+    Task SetAuthenticationHeader(string tenantId);
+    Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated);
+    Task<Employee> GetEmployeeAsync(string resourceUrl);
+}
+
+public class PublicApiClient : IPublicApiClient
 {
     private readonly HttpClient _client;
     private readonly ILogger<PublicApiClient> _log;

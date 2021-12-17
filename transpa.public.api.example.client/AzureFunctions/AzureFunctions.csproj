@@ -30,4 +30,8 @@
       <ProjectReference Include="..\..\oas.generated\src\transpa.api.generated\transpa.api.generated.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="External" />
+    </ItemGroup>
+
 </Project>
