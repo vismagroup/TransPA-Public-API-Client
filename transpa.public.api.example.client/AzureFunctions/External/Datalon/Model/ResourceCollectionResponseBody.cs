@@ -9,6 +9,6 @@ namespace TransPA.OpenSource.External.Datalon.Model
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]
     public class ResourceCollectionResponseBody<T>
     {
-        public IEnumerable<T> collection { get; set; } = null!;
+        public ICollection<T> collection { get; set; } = null!;
     }
 }

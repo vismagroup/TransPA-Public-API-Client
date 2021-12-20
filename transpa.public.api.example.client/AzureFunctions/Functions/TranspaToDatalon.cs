@@ -64,11 +64,14 @@ namespace TransPA.OpenSource.Functions
                 throw new Exception("Missing DataLon refreshToken");
             }
 
-            await _datalonApiClient.SetAuthenticationHeader(environmentVariable); // TODO: Have to be reworked to be able to handle different tenants (singleton problem)
+            await _datalonApiClient.SetAuthenticationHeader(environmentVariable); // TODO: Have to be reworked to be able to handle different tenants/refresh tokens (singleton problem)
 
-            var datalonEmployeeId = await _datalonApiClient.GetEmployeeIdAsync(employeeNumberAsString, "62000059");
+            var datalonEmployerId = "62000059"; // TODO: Read this from API, or retrieve it from the JWT token
+            var datalonEmployeeId = await _datalonApiClient.GetEmployeeIdAsync(employeeNumberAsString, datalonEmployerId);
 
-            return new OkObjectResult(datalonEmployeeId); // Remark: TransPA will not do anything with the return code here. It's essential that you report the status via the API.
+            var existingFormsForEmployee = await _datalonApiClient.GetFormsForEmployee(salary, datalonEmployerId, datalonEmployeeId);
+
+            return new OkObjectResult(existingFormsForEmployee.Count); // Remark: TransPA will not do anything with the return code here. It's essential that you report the status via the API.
         }
     }
 }

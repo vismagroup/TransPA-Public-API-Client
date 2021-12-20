@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using transpa.api.generated.Model;
 using TransPA.OpenSource.Constants;
 using TransPA.OpenSource.External.Datalon.Model;
 
@@ -13,13 +14,14 @@ public interface IDatalonApiClient
 {
     Task SetAuthenticationHeader(string datalonRefreshToken);
 
-    Task<string> GetBearerTokenAsync(string refreshToken);
-
-    Task<string> GetEmployeeIdAsync(string employeeNumber, string employeerId); 
+    Task<string> GetEmployeeIdAsync(string employeeNumber, string employerId);
+    Task<ICollection<Form>> GetFormsForEmployee(Salary salary, string employerId, string employeeId);
 }
 
 public class DatalonApiClient : IDatalonApiClient
 {
+    public const string FormStatusCommitted = "committed";
+
     private readonly HttpClient _client;
     private readonly ILogger<DatalonApiClient> _log;
 
@@ -75,10 +77,11 @@ public class DatalonApiClient : IDatalonApiClient
         throw new Exception("Failed reading JWT token for DataLon");
     }
 
-    public async Task<string> GetEmployeeIdAsync(string employeeNumber, string employeerId) // TODO: Add unit test for extracting employeeNumber and salaryperiod code
+    public async Task<string> GetEmployeeIdAsync(string employeeNumber, string employerId)
     {
         var responseMessage =
-            await _client.GetAsync($"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employeerId}/employees");
+            await _client.GetAsync(
+                $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/employees");
         var jsonBody = await responseMessage.Content.ReadAsStringAsync();
         var employees = JsonConvert.DeserializeObject<ResourceCollectionResponseBody<EmployeeResponseBody>>(jsonBody);
 
@@ -88,6 +91,30 @@ public class DatalonApiClient : IDatalonApiClient
         return employees.collection
             .First(e => e.employeeNumber.Equals(datalonNonUniqueEmployeeNumber) && e.salaryPeriodCode.Equals(datalonSalaryPeriodCode))
             .employeeId;
+    }
+
+    public async Task<ICollection<Form>> GetFormsForEmployee(Salary salary, string employerId, string employeeId)
+    {
+        var responseMessage =
+            await _client.GetAsync(
+                $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/forms?from={salary.StartDate}&to={salary.EndDate}&pageSize=5000");
+
+        var jsonBody = await responseMessage.Content.ReadAsStringAsync();
+        var response = JsonConvert.DeserializeObject<ResourceCollectionResponseBodyExtended<Form>>(jsonBody);
+
+        if (response.totalCount == response.pageSize)
+        {
+            _log.LogError(
+                $"Reading committed forms return more than we built support for ({response.totalCount}). Value need to be adjusted, or read next value");
+        }
+
+        var forms = response.collection;
+        if (!forms.Any())
+        {
+            return forms;
+        }
+
+        return forms.Where(f => f.entries.First().employeeId.Equals(employeeId) && f.state.Equals(FormStatusCommitted)).ToList();
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
