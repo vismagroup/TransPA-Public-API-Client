@@ -38,7 +38,10 @@ public class DatalonApiClient : IDatalonApiClient
             throw new Exception("Ocp-Apim-Subscription-Key is not set");
         }
 
-        _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apimSubscriptionKey);
+        if (!_client.DefaultRequestHeaders.Contains("Ocp-Apim-Subscription-Key"))
+        {
+            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apimSubscriptionKey);
+        }
 
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", await GetBearerTokenAsync(datalonRefreshToken));
