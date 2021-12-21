@@ -23,14 +23,14 @@ public class SalaryConverter
             {
                 employeeId = employeeId,
                 payTypeCode = $"00{w.PayTypeCode.Substring(0, 2)}",
-                value = (int) w.Quantity * 100
+                value = (int) (w.Quantity * 100)
             };
 
             var unitPrice = new Entry()
             {
                 employeeId = employeeId,
                 payTypeCode = $"00{w.PayTypeCode.Substring(2, 2)}",
-                value = (int) w.UnitPrice.Amount * 100
+                value = (int) (w.UnitPrice.Amount * 100)
             };
 
             entries.Add(quantity);

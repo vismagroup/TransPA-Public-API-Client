@@ -14,10 +14,10 @@ public class SalaryConverterTest
     private const string PayTypeCode = "1213";
     private const string PayTypeCodeQuantityPart = "0012";
     private const string PayTypeCodeUnitPricePart = "0013";
-    private const decimal Quantity = (decimal) 120.0;
-    private const int QuantityInDatalonFormat = 12000;
-    private const decimal UnitPrice = (decimal) 300.00;
-    private const int UnitPriceInDatalonFormat = 30000;
+    private const decimal Quantity = (decimal) 120.01;
+    private const int QuantityInDatalonFormat = 12001;
+    private const decimal UnitPrice = (decimal) 300.02;
+    private const int UnitPriceInDatalonFormat = 30002;
 
     [SetUp]
     public void SetUp()
@@ -58,6 +58,5 @@ public class SalaryConverterTest
         entries[1].employeeId.Should().Be(DatalonEmployeeId);
         entries[1].value.Should().Be(UnitPriceInDatalonFormat);
         entries[1].payTypeCode.Should().Be(PayTypeCodeUnitPricePart);
-        
     }
 }
