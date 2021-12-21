@@ -7,7 +7,7 @@ namespace TransPA.OpenSource.External.Datalon.Model
     [SuppressMessage("ReSharper", "NotAccessedField.Local")]
     [SuppressMessage("ReSharper", "UnusedType.Local")]
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]
-    public class ResourceCollectionResponseBody<T>
+    public class ResourceCollectionBody<T>
     {
         public ICollection<T> collection { get; set; } = null!;
     }

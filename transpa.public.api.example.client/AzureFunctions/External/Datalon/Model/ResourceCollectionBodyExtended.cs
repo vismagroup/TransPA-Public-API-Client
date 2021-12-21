@@ -1,6 +1,6 @@
 ﻿namespace TransPA.OpenSource.External.Datalon.Model;
 
-public class ResourceCollectionResponseBodyExtended<T> : ResourceCollectionResponseBody<T>
+public class ResourceCollectionBodyExtended<T> : ResourceCollectionBody<T>
 {
     public long page { get; set; }
     public long pageSize { get; set; }

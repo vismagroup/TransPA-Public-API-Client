@@ -17,6 +17,7 @@ public interface IDatalonApiClient
     Task<string> GetEmployeeIdAsync(string employeeNumber, string employerId);
     Task<ICollection<Form>> GetFormsForEmployee(Salary salary, string employerId, string employeeId);
     Task<bool> ArchiveForm(string formId, string employerId);
+    Task<bool> CommitForm(Form form, string employerId);
 }
 
 public class DatalonApiClient : IDatalonApiClient
@@ -84,7 +85,7 @@ public class DatalonApiClient : IDatalonApiClient
             await _client.GetAsync(
                 $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/employees");
         var jsonBody = await responseMessage.Content.ReadAsStringAsync();
-        var employees = JsonConvert.DeserializeObject<ResourceCollectionResponseBody<EmployeeResponseBody>>(jsonBody);
+        var employees = JsonConvert.DeserializeObject<ResourceCollectionBody<EmployeeResponseBody>>(jsonBody);
 
         var datalonNonUniqueEmployeeNumber = employeeNumber.Substring(2);
         var datalonSalaryPeriodCode = employeeNumber.Substring(0, 2);
@@ -101,7 +102,7 @@ public class DatalonApiClient : IDatalonApiClient
                 $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/forms?from={salary.StartDate}&to={salary.EndDate}&pageSize=5000");
 
         var jsonBody = await responseMessage.Content.ReadAsStringAsync();
-        var response = JsonConvert.DeserializeObject<ResourceCollectionResponseBodyExtended<Form>>(jsonBody);
+        var response = JsonConvert.DeserializeObject<ResourceCollectionBodyExtended<Form>>(jsonBody);
 
         if (response.totalCount == response.pageSize)
         {
@@ -130,6 +131,37 @@ public class DatalonApiClient : IDatalonApiClient
         }
 
         return responseMessage.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> CommitForm(Form form, string employerId)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post,
+            $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/forms/commit");
+        var requestBody = new ResourceCollectionBody<Form>()
+        {
+            collection = new List<Form>()
+            {
+                form
+            }
+        };
+        
+        request.Content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+
+        var responseMessage = await _client.SendAsync(request);
+
+        switch (responseMessage.StatusCode)
+        {
+            case HttpStatusCode.OK:
+                return true;
+            case HttpStatusCode.BadRequest:
+                _log.LogError("Bad request - something went wrong"); 
+                // TODO: In a later ticket we need to report back an error here depending on the error, hopefully with indication or resolution 
+                throw new Exception("BadRequest error");
+            default:
+                _log.LogError($"Unspecified - {responseMessage.StatusCode} - Something went wrong"); 
+                // TODO: In a later ticket we need to report back an unhandled error here 
+                throw new Exception("Other error");
+        }
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]

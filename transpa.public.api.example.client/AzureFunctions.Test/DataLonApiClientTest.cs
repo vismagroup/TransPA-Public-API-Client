@@ -52,9 +52,9 @@ public class DataLonApiClientTest
         Environment.SetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost, "https://example.test");
     }
 
-    private ResourceCollectionResponseBody<DatalonApiClient.EmployeeResponseBody> GetListEmployeeEmployeesWhereTwoHaveTheSameEmployeeNumber()
+    private ResourceCollectionBody<DatalonApiClient.EmployeeResponseBody> GetListEmployeeEmployeesWhereTwoHaveTheSameEmployeeNumber()
     {
-        return new ResourceCollectionResponseBody<DatalonApiClient.EmployeeResponseBody>()
+        return new ResourceCollectionBody<DatalonApiClient.EmployeeResponseBody>()
         {
             collection = new[]
             {
