@@ -1,5 +1,10 @@
-﻿namespace TransPA.OpenSource.External.Datalon.Model;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace TransPA.OpenSource.External.Datalon.Model;
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
 public class Entry
 {
     public string entryId { get; set; } = null!;

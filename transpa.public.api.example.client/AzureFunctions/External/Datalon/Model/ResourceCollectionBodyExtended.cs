@@ -1,5 +1,11 @@
-﻿namespace TransPA.OpenSource.External.Datalon.Model;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace TransPA.OpenSource.External.Datalon.Model;
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class ResourceCollectionBodyExtended<T> : ResourceCollectionBody<T>
 {
     public long page { get; set; }

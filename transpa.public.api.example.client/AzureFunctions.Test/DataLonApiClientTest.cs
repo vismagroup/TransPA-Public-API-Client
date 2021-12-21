@@ -43,7 +43,6 @@ public class DataLonApiClientTest
             StatusCode = HttpStatusCode.OK,
             Content = new StringContent(JsonConvert.SerializeObject(employees))
         });
-        //.Verifiable();
         _httpClient = new HttpClient(handlerMock.Object);
 
         _mockFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(_httpClient);

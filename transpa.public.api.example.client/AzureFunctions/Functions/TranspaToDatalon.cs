@@ -47,7 +47,7 @@ namespace TransPA.OpenSource.Functions
             }
 
             await _publicApiClient.SetAuthenticationHeader(salaryCreated
-                .TenantId); // TODO: Have to be reworked to be able to handle different tenants (singleton problem)
+                .TenantId); // TODO: Have to be reworked to be able to handle different tenants (singleton problem) - TPA-2658
 
             var salary = await _publicApiClient.GetSalaryAsync(salaryCreated);
 
@@ -59,8 +59,6 @@ namespace TransPA.OpenSource.Functions
             /*
              * Integration specific
              */
-            // TODO: Add validation for salary payTypeCode
-
             var employeeValidationResult = await _employeeValidator.ValidateAsync(employee);
             if (!employeeValidationResult.IsValid)
             {
@@ -86,9 +84,9 @@ namespace TransPA.OpenSource.Functions
 
             await _datalonApiClient
                 .SetAuthenticationHeader(
-                    environmentVariable); // TODO: Have to be reworked to be able to handle different tenants/refresh tokens (singleton problem)
+                    environmentVariable); // TODO: Have to be reworked to be able to handle different tenants/refresh tokens (singleton problem) - TPA-2658
 
-            var datalonEmployerId = "62000059"; // TODO: Read this from API, or retrieve it from the JWT token
+            var datalonEmployerId = "62000059"; // TODO: Read this from API, or retrieve it from the JWT token - TPA-2666
             var datalonEmployeeId = await _datalonApiClient.GetEmployeeIdAsync(employeeNumberAsString, datalonEmployerId);
 
             var existingFormsForEmployee = await _datalonApiClient.GetFormsForEmployee(salary, datalonEmployerId, datalonEmployeeId);
