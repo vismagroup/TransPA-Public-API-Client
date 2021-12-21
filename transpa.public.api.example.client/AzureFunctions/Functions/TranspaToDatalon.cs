@@ -86,7 +86,7 @@ namespace TransPA.OpenSource.Functions
                 .SetAuthenticationHeader(
                     environmentVariable); // TODO: Have to be reworked to be able to handle different tenants/refresh tokens (singleton problem) - TPA-2658
 
-            var datalonEmployerId = "62000059"; // TODO: Read this from API, or retrieve it from the JWT token - TPA-2666
+            var datalonEmployerId = await _datalonApiClient.GetEmployerId();
             var datalonEmployeeId = await _datalonApiClient.GetEmployeeIdAsync(employeeNumberAsString, datalonEmployerId);
 
             var existingFormsForEmployee = await _datalonApiClient.GetFormsForEmployee(salary, datalonEmployerId, datalonEmployeeId);

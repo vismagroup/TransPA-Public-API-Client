@@ -18,6 +18,7 @@ public interface IDatalonApiClient
     Task<ICollection<Form>> GetFormsForEmployee(Salary salary, string employerId, string employeeId);
     Task<bool> ArchiveForm(string formId, string employerId);
     Task<bool> CommitForm(Form form, string employerId);
+    Task<string> GetEmployerId();
 }
 
 public class DatalonApiClient : IDatalonApiClient
@@ -77,6 +78,17 @@ public class DatalonApiClient : IDatalonApiClient
         }
 
         throw new Exception("Failed reading JWT token for DataLon");
+    }
+    
+    public async Task<string> GetEmployerId()
+    {
+        var responseMessage =
+            await _client.GetAsync(
+                $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary");
+        var jsonBody = await responseMessage.Content.ReadAsStringAsync();
+        var root = JsonConvert.DeserializeObject<SalaryRootResponseBody>(jsonBody);
+
+        return root.employerId;
     }
 
     public async Task<string> GetEmployeeIdAsync(string employeeNumber, string employerId)
