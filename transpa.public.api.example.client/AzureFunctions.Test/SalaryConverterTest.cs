@@ -18,6 +18,10 @@ public class SalaryConverterTest
     private const int QuantityInDatalonFormat = 12001;
     private const decimal UnitPrice = (decimal) 300.02;
     private const int UnitPriceInDatalonFormat = 30002;
+    
+    private const string PayTypeCodeTimeRow = "0001";
+    private const decimal TimeRowQuantity = (decimal) 8.02;
+    private const int TimeRowQuantityInDatalonFormat = 802;
 
     [SetUp]
     public void SetUp()
@@ -39,7 +43,8 @@ public class SalaryConverterTest
                     UnitPrice = new Money(UnitPrice, "DKK"),
                     PayTypeCode = PayTypeCode
                 }
-            }
+            },
+            TimeRows = new List<SalaryTimeRows>()
         };
 
         // Act
@@ -58,5 +63,72 @@ public class SalaryConverterTest
         entries[1].employeeId.Should().Be(DatalonEmployeeId);
         entries[1].value.Should().Be(UnitPriceInDatalonFormat);
         entries[1].payTypeCode.Should().Be(PayTypeCodeUnitPricePart);
+    }
+
+    [Test]
+    public void TimeWageRowIsRepresentedProperly()
+    {
+        // Arrange 
+        var salary = new Salary()
+        {
+            WageRows = new List<SalaryWageRows>(),
+            TimeRows = new List<SalaryTimeRows>()
+            {
+                new SalaryTimeRows()
+                {
+                    PayTypeCode = PayTypeCodeTimeRow,
+                    Details = new List<SalaryDetails1>()
+                    {
+                        new SalaryDetails1()
+                        {
+                            Quantity = TimeRowQuantity
+                        }
+                    }
+                }
+            }
+        };
+
+        // Act
+        var form = _testee.Convert(salary, DatalonEmployeeId);
+
+        // Assert
+        var formEntries = form.entries;
+        formEntries.Count.Should().Be(1);
+        var entries = formEntries.ToList();
+
+        var entry = entries[0];
+        entry.employeeId.Should().Be(DatalonEmployeeId);
+        entry.value.Should().Be(TimeRowQuantityInDatalonFormat);
+        entry.payTypeCode.Should().Be(PayTypeCodeTimeRow);
+    }
+    
+    [Test]
+    public void EntriesThatAreMissingPayCodeAreNotAdded()
+    {
+        // Arrange 
+        var salary = new Salary()
+        {
+            WageRows = new List<SalaryWageRows>()
+            {
+                new SalaryWageRows()
+                {
+                    PayTypeCode = ""
+                }
+            },
+            TimeRows = new List<SalaryTimeRows>()
+            {
+                new SalaryTimeRows()
+                {
+                    PayTypeCode = ""
+                }
+            }
+        };
+
+        // Act
+        var form = _testee.Convert(salary, DatalonEmployeeId);
+
+        // Assert
+        var formEntries = form.entries;
+        formEntries.Count.Should().Be(0);
     }
 }

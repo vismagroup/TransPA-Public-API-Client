@@ -122,12 +122,12 @@ public class DatalonApiClient : IDatalonApiClient
     public async Task<bool> ArchiveForm(string formId, string employerId)
     {
         var request = new HttpRequestMessage(HttpMethod.Post,
-            $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/forms/archive/formId");
+            $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/forms/archive/{formId}");
 
         var responseMessage = await _client.SendAsync(request);
-        if (responseMessage.IsSuccessStatusCode)
+        if (!responseMessage.IsSuccessStatusCode)
         {
-            _log.LogWarning($"Something went wrong when trying to archive form {formId} for employer {employerId}");
+            _log.LogError($"Something went wrong when trying to archive form {formId} for employer {employerId}");
         }
 
         return responseMessage.IsSuccessStatusCode;
