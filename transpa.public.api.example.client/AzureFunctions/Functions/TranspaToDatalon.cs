@@ -52,9 +52,7 @@ namespace TransPA.OpenSource.Functions
             var salary = await _publicApiClient.GetSalaryAsync(salaryCreated);
 
             var uri = new Uri(salaryCreated.ResourceUrl);
-
-            var employeeResourceUrl = $"https://{uri.Host}/publicApi/v1/employees/{salary.EmployeeId}"; // TODO: Url should be constructed inside public api client
-            var employee = await _publicApiClient.GetEmployeeAsync(employeeResourceUrl);
+            var employee = await _publicApiClient.GetEmployeeAsync(salary.EmployeeId, uri.Host);
 
             /*
              * Integration specific

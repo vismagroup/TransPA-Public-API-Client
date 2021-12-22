@@ -41,7 +41,7 @@ public class TranspaToDataLonTest
     {
         // Arrange
         var employeeNumberMissing = new Employee(employeeNumber: null);
-        _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>())).ReturnsAsync(employeeNumberMissing);
+        _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employeeNumberMissing);
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(new Salary(employeeId: TranspaEmployeeId));
 
         // Act
@@ -58,7 +58,7 @@ public class TranspaToDataLonTest
     {
         // Arrange
         var employeeWithEmployeeNumberWithBadFormat = new Employee(employeeNumber: 24035);
-        _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>())).ReturnsAsync(employeeWithEmployeeNumberWithBadFormat);
+        _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employeeWithEmployeeNumberWithBadFormat);
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(new Salary(employeeId: TranspaEmployeeId));
 
         // Act
@@ -77,7 +77,7 @@ public class TranspaToDataLonTest
     {
         // Arrange
         var employee = new Employee(employeeNumber: 240035);
-        _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>())).ReturnsAsync(employee);
+        _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employee);
         var salary = new Salary(employeeId: TranspaEmployeeId, wageRows: new List<SalaryWageRows>()
         {
             new SalaryWageRows(wageRowPayTypeCode, new Money(100, "SEK"), 200)

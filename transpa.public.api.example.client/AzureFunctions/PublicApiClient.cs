@@ -13,30 +13,38 @@ public interface IPublicApiClient
 {
     Task SetAuthenticationHeaderAsync(string tenantId);
     Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated);
-    Task<Employee> GetEmployeeAsync(string resourceUrl);
+    Task<Employee> GetEmployeeAsync(string salaryEmployeeId, string resourceUrl);
 }
 
 public class PublicApiClient : IPublicApiClient
 {
     private readonly HttpClient _client;
     private readonly ILogger<PublicApiClient> _log;
+    
+    private readonly string _vismaConnectHost;
+    private readonly string _apimSubscriptionKey;
 
     public PublicApiClient(IHttpClientFactory httpClientFactory, ILogger<PublicApiClient> log)
     {
         _client = httpClientFactory.CreateClient();
         _log = log;
+        
+        _vismaConnectHost = Environment.GetEnvironmentVariable(TranspaPublicApiConfigurationNameConstants.VismaConnectHost) ?? "";
+        if (String.IsNullOrEmpty(_vismaConnectHost))
+        {
+            _log.LogError("ConnectHost is not properly set up");
+        }
+        
+        _apimSubscriptionKey = Environment.GetEnvironmentVariable(TranspaPublicApiConfigurationNameConstants.OcpApimSubscriptionKey) ?? "";
+        if (String.IsNullOrEmpty(_apimSubscriptionKey))
+        {
+            _log.LogError("Ocp-Apim-Subscription-Key is not set");
+        }
     }
 
     public async Task SetAuthenticationHeaderAsync(string tenantId)
     {
-        var apimSubscriptionKey = Environment.GetEnvironmentVariable(TranspaPublicApiConfigurationNameConstants.OcpApimSubscriptionKey) ?? "";
-        if (String.IsNullOrEmpty(apimSubscriptionKey))
-        {
-            _log.LogError("Ocp-Apim-Subscription-Key is not set");
-            throw new Exception("Ocp-Apim-Subscription-Key is not set");
-        }
-
-        _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apimSubscriptionKey);
+        _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _apimSubscriptionKey);
 
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", (await GetBearerTokenAsync(tenantId)).access_token);
@@ -85,14 +93,7 @@ public class PublicApiClient : IPublicApiClient
 
     private string GetBearerTokenUrl()
     {
-        var connectHost = Environment.GetEnvironmentVariable(TranspaPublicApiConfigurationNameConstants.VismaConnectHost);
-        if (String.IsNullOrEmpty(connectHost))
-        {
-            _log.LogError("ConnectHost is not properly set up");
-            throw new Exception("Connect host is missing");
-        }
-
-        return $"https://{connectHost}/connect/token";
+        return $"https://{_vismaConnectHost}/connect/token";
     }
 
     public async Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated)
@@ -118,9 +119,10 @@ public class PublicApiClient : IPublicApiClient
         throw new Exception("Failed to read salary");
     }
 
-    public async Task<Employee> GetEmployeeAsync(string resourceUrl)
+    public async Task<Employee> GetEmployeeAsync(string employeeId, string host)
     {
-        var httpResponseMessage = await _client.GetAsync(resourceUrl);
+        var employeeResourceUrl = $"https://{host}/publicApi/v1/employees/{employeeId}";
+        var httpResponseMessage = await _client.GetAsync(employeeResourceUrl);
 
         switch (httpResponseMessage.StatusCode)
         {
