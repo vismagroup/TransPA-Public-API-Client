@@ -32,8 +32,8 @@ public class TranspaToDataLonTest
 
         _publicApiClientMock = new Mock<IPublicApiClient>();
         _datalonApiClientMock = new Mock<IDatalonApiClient>();
-        _testee = new TranspaToDatalon(_publicApiClientMock.Object, _datalonApiClientMock.Object, new SalaryConverter(),
-            new EmployeeValidator(new Mock<ILogger<DatalonApiClient>>().Object), new HttpObjectResultHelper(), new SalaryValidator());
+        _testee = new TranspaToDatalon(_publicApiClientMock.Object, _datalonApiClientMock.Object, 
+            new EmployeeValidator(new Mock<ILogger<DatalonApiClient>>().Object), new SalaryValidator(), new SalaryConverter(), new HttpObjectResultHelper());
     }
 
     [Test]

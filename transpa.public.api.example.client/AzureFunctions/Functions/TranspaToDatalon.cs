@@ -15,20 +15,20 @@ namespace TransPA.OpenSource.Functions
     {
         private readonly IPublicApiClient _publicApiClient;
         private readonly IDatalonApiClient _datalonApiClient;
-        private readonly SalaryConverter _salaryConverter;
         private readonly EmployeeValidator _employeeValidator;
-        private readonly HttpObjectResultHelper _httpObjectResultHelper;
         private readonly SalaryValidator _salaryValidator;
+        private readonly SalaryConverter _salaryConverter;
+        private readonly HttpObjectResultHelper _httpObjectResultHelper;
 
-        public TranspaToDatalon(IPublicApiClient publicApiClient, IDatalonApiClient datalonApiClient, SalaryConverter salaryConverter,
-            EmployeeValidator employeeValidator, HttpObjectResultHelper httpObjectResultHelper, SalaryValidator salaryValidator)
+        public TranspaToDatalon(IPublicApiClient publicApiClient, IDatalonApiClient datalonApiClient, 
+            EmployeeValidator employeeValidator, SalaryValidator salaryValidator, SalaryConverter salaryConverter, HttpObjectResultHelper httpObjectResultHelper)
         {
             _publicApiClient = publicApiClient;
             _datalonApiClient = datalonApiClient;
-            _salaryConverter = salaryConverter;
             _employeeValidator = employeeValidator;
-            _httpObjectResultHelper = httpObjectResultHelper;
             _salaryValidator = salaryValidator;
+            _salaryConverter = salaryConverter;
+            _httpObjectResultHelper = httpObjectResultHelper;
         }
 
         [FunctionName("DataLon")]
