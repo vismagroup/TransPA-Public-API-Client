@@ -75,7 +75,7 @@ public class PublicApiClient : IPublicApiClient
             var responseBody = JsonConvert.DeserializeObject<BearerTokenBadRequestResponseBody>(jsonBody);
             _log.LogError($"Received and BadRequest response when trying to read bearer token. Error code: {responseBody.error}");
         }
-        else if (response.StatusCode != HttpStatusCode.OK)
+        else
         {
             _log.LogError("Unknown error");
         }

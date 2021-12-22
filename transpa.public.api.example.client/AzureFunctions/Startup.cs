@@ -12,11 +12,11 @@ namespace TransPA.OpenSource
         {
             var services = builder.Services;
             services.AddHttpClient();
-            services.AddSingleton<IPublicApiClient, PublicApiClient>();
             services.AddSingleton<IDatalonApiClient, DatalonApiClient>();
-            services.AddSingleton<SalaryConverter>();
             services.AddSingleton<EmployeeValidator>();
             services.AddSingleton<HttpObjectResultHelper>();
+            services.AddSingleton<IPublicApiClient, PublicApiClient>();
+            services.AddSingleton<SalaryConverter>();
             services.AddSingleton<SalaryValidator>();
         }
     }
