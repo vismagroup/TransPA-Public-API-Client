@@ -46,7 +46,7 @@ namespace TransPA.OpenSource.Functions
                 return _httpObjectResultHelper.GetBadRequestResult("Failed parsing request body");
             }
 
-            await _publicApiClient.SetAuthenticationHeader(salaryCreated
+            await _publicApiClient.SetAuthenticationHeaderAsync(salaryCreated
                 .TenantId); // TODO: Have to be reworked to be able to handle different tenants (singleton problem) - TPA-2658
 
             var salary = await _publicApiClient.GetSalaryAsync(salaryCreated);

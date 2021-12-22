@@ -11,7 +11,7 @@ namespace TransPA.OpenSource;
 
 public interface IPublicApiClient
 {
-    Task SetAuthenticationHeader(string tenantId);
+    Task SetAuthenticationHeaderAsync(string tenantId);
     Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated);
     Task<Employee> GetEmployeeAsync(string resourceUrl);
 }
@@ -27,7 +27,7 @@ public class PublicApiClient : IPublicApiClient
         _log = log;
     }
 
-    public async Task SetAuthenticationHeader(string tenantId)
+    public async Task SetAuthenticationHeaderAsync(string tenantId)
     {
         var apimSubscriptionKey = Environment.GetEnvironmentVariable(TranspaPublicApiConfigurationNameConstants.OcpApimSubscriptionKey) ?? "";
         if (String.IsNullOrEmpty(apimSubscriptionKey))

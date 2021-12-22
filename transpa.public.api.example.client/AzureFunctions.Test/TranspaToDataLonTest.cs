@@ -22,7 +22,7 @@ public class TranspaToDataLonTest
 
     private SalaryCreated _salaryCreated = null!;
 
-    private const string TranspaEmployeeId = "tranpsa-guid";
+    private const string TranspaEmployeeId = "transpa-guid";
 
     [SetUp]
     public void SetUp()
