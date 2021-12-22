@@ -131,6 +131,7 @@ public class DatalonApiClient : IDatalonApiClient
         }
 
         var forms = response.Collection;
+        _log.LogInformation($"There are {forms.Count} forms to be checked");
         if (!forms.Any())
         {
             return forms;
