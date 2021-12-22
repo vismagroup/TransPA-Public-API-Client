@@ -139,7 +139,7 @@ public class DatalonApiClient : IDatalonApiClient
         var responseMessage = await _client.SendAsync(request);
         if (!responseMessage.IsSuccessStatusCode)
         {
-            _log.LogError($"Something went wrong when trying to archive form {formId} for employer {employerId}");
+            _log.LogError($"Unknown error happened when trying to archive form {formId} for employer {employerId}. Https status code {responseMessage.StatusCode}");
         }
 
         return responseMessage.IsSuccessStatusCode;

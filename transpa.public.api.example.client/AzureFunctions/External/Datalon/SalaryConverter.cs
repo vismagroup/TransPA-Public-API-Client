@@ -23,8 +23,8 @@ public class SalaryConverter
             {
                 return;
             }
-            var quantity = GetQuantityEntry(employeeId, w);
-            var unitPrice = GetUnitPriceEntry(employeeId, w);
+            var quantity = GetWageRowQuantityEntry(employeeId, w);
+            var unitPrice = GetWageRowUnitPriceEntry(employeeId, w);
 
             entries.Add(quantity);
             entries.Add(unitPrice);
@@ -36,7 +36,7 @@ public class SalaryConverter
             {
                 return;
             }
-            var quantity = GetTimeRowQuantity(employeeId, t);
+            var quantity = GetTimeRowQuantityEntry(employeeId, t);
 
             entries.Add(quantity);
         });
@@ -44,21 +44,21 @@ public class SalaryConverter
         return entries;
     }
 
-    private Entry GetQuantityEntry(string employeeId, SalaryWageRows salaryWageRows)
+    private Entry GetWageRowQuantityEntry(string employeeId, SalaryWageRows salaryWageRows)
     {
         var entry = GetEntry(employeeId, salaryWageRows.Quantity);
         entry.payTypeCode = $"00{salaryWageRows.PayTypeCode.Substring(0, 2)}";
         return entry;
     }
     
-    private Entry GetUnitPriceEntry(string employeeId, SalaryWageRows salaryWageRows)
+    private Entry GetWageRowUnitPriceEntry(string employeeId, SalaryWageRows salaryWageRows)
     {
         var entry = GetEntry(employeeId, salaryWageRows.UnitPrice.Amount);
         entry.payTypeCode = $"00{salaryWageRows.PayTypeCode.Substring(2, 2)}";
         return entry;
     }
     
-    private Entry GetTimeRowQuantity(string employeeId, SalaryTimeRows salaryTimeRows)
+    private Entry GetTimeRowQuantityEntry(string employeeId, SalaryTimeRows salaryTimeRows)
     {
         var sum = salaryTimeRows.Details.Sum(x => x.Quantity);
         var entry = GetEntry(employeeId, sum);

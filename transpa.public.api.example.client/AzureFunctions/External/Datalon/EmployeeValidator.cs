@@ -25,7 +25,7 @@ public class EmployeeValidator : AbstractValidator<Employee>
         var isEmployeeNumberCorrectlyFormatted = employeeNumber.Value.ToString().Length == 6;
         if (!isEmployeeNumberCorrectlyFormatted)
         {
-            _log.LogWarning("EmployeeNumber is not of 6 in length");
+            _log.LogWarning("EmployeeNumber is not 6 characters long");
         }
         
         return isEmployeeNumberCorrectlyFormatted;
