@@ -9,8 +9,8 @@ public class SalaryConverter
     {
         return new Form()
         {
-            date = salary.StartDate,
-            entries = GetEntries(salary, datalonEmployeeId)
+            Date = salary.StartDate,
+            Entries = GetEntries(salary, datalonEmployeeId)
         };
     }
 
@@ -47,14 +47,14 @@ public class SalaryConverter
     private Entry GetWageRowQuantityEntry(string employeeId, SalaryWageRows salaryWageRows)
     {
         var entry = GetEntry(employeeId, salaryWageRows.Quantity);
-        entry.payTypeCode = $"00{salaryWageRows.PayTypeCode.Substring(0, 2)}";
+        entry.PayTypeCode = $"00{salaryWageRows.PayTypeCode.Substring(0, 2)}";
         return entry;
     }
     
     private Entry GetWageRowUnitPriceEntry(string employeeId, SalaryWageRows salaryWageRows)
     {
         var entry = GetEntry(employeeId, salaryWageRows.UnitPrice.Amount);
-        entry.payTypeCode = $"00{salaryWageRows.PayTypeCode.Substring(2, 2)}";
+        entry.PayTypeCode = $"00{salaryWageRows.PayTypeCode.Substring(2, 2)}";
         return entry;
     }
     
@@ -62,7 +62,7 @@ public class SalaryConverter
     {
         var sum = salaryTimeRows.Details.Sum(x => x.Quantity);
         var entry = GetEntry(employeeId, sum);
-        entry.payTypeCode = $"00{salaryTimeRows.PayTypeCode.Substring(2, 2)}";
+        entry.PayTypeCode = $"00{salaryTimeRows.PayTypeCode.Substring(2, 2)}";
         return entry;
     }
 
@@ -70,8 +70,8 @@ public class SalaryConverter
     {
         return new Entry()
         {
-            employeeId = employeeId,
-            value = (int) (value * 100)
+            EmployeeId = employeeId,
+            Value = (int) (value * 100)
         };
     }
 }

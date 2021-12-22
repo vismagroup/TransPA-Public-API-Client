@@ -1,17 +1,27 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace TransPA.OpenSource.External.Datalon.Model;
 
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-[SuppressMessage("ReSharper", "UnusedMember.Global")]
-[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
-[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class Form
 {
-    public string formId { get; set; } = null!;
-    public DateTime date { get; set; }
-    public string state { get; set; } = null!;
-    public string reference { get; set; } = null!;
-    public ICollection<Entry> entries { get; set; } = null!;
+    public Form(string formId = default!, DateTime date = default!, string state = default!, string reference = default!, ICollection<Entry> entries = default!)
+    {
+        FormId = formId;
+        Date = date;
+        State = state;
+        Reference = reference;
+        Entries = entries;
+    }
+
+    [DataMember(Name = "formId", EmitDefaultValue = false)]
+    public string FormId { get; set; }
+    [DataMember(Name = "date", EmitDefaultValue = false)]
+    public DateTime Date { get; set; }
+    [DataMember(Name = "state", EmitDefaultValue = false)]
+    public string State { get; set; }
+    [DataMember(Name = "reference", EmitDefaultValue = false)]
+    public string Reference { get; set; }
+    [DataMember(Name = "entries", EmitDefaultValue = false)]
+    public ICollection<Entry> Entries { get; set; }
 }

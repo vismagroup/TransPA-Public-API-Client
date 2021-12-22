@@ -55,19 +55,19 @@ public class DataLonApiClientTest
     {
         return new ResourceCollectionBody<DatalonApiClient.EmployeeResponseBody>()
         {
-            collection = new[]
+            Collection = new[]
             {
                 new DatalonApiClient.EmployeeResponseBody()
                 {
-                    employeeNumber = DatalonDuplicatedEmployeeNumber,
-                    salaryPeriodCode = DatalonCorrectSalaryPeriodCode,
-                    employeeId = DatalonCorrectEmployeeId
+                    EmployeeNumber = DatalonDuplicatedEmployeeNumber,
+                    SalaryPeriodCode = DatalonCorrectSalaryPeriodCode,
+                    EmployeeId = DatalonCorrectEmployeeId
                 },
                 new DatalonApiClient.EmployeeResponseBody()
                 {
-                    employeeNumber = DatalonDuplicatedEmployeeNumber,
-                    salaryPeriodCode = DatalonWrongSalaryPeriodCode,
-                    employeeId = DatalonWrongEmployeeId
+                    EmployeeNumber = DatalonDuplicatedEmployeeNumber,
+                    SalaryPeriodCode = DatalonWrongSalaryPeriodCode,
+                    EmployeeId = DatalonWrongEmployeeId
                 }
             }
         };

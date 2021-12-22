@@ -1,15 +1,16 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Runtime.Serialization;
 
 namespace TransPA.OpenSource.External.Datalon.Model;
 
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-[SuppressMessage("ReSharper", "UnusedMember.Global")]
-[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class ResourceCollectionBodyExtended<T> : ResourceCollectionBody<T>
 {
-    public long page { get; set; }
-    public long pageSize { get; set; }
-    public long availablePages { get; set; }
-    public long totalCount { get; set; }
+    [DataMember(Name = "page", EmitDefaultValue = false)]
+
+    public long Page { get; set; }
+    [DataMember(Name = "pageSize", EmitDefaultValue = false)]
+    public long PageSize { get; set; }
+    [DataMember(Name = "availablePages", EmitDefaultValue = false)]
+    public long AvailablePages { get; set; }
+    [DataMember(Name = "totalCount", EmitDefaultValue = false)]
+    public long TotalCount { get; set; }
 }

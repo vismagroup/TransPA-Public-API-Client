@@ -89,7 +89,7 @@ namespace TransPA.OpenSource.Functions
 
             var existingFormsForEmployee = await _datalonApiClient.GetFormsForEmployee(salary, datalonEmployerId, datalonEmployeeId);
             await Parallel.ForEachAsync(existingFormsForEmployee,
-                async (form, cancellationToken) => await _datalonApiClient.ArchiveForm(form.formId, datalonEmployerId));
+                async (form, cancellationToken) => await _datalonApiClient.ArchiveForm(form.FormId, datalonEmployerId));
 
             var convert = _salaryConverter.Convert(salary, datalonEmployeeId);
             await _datalonApiClient.CommitForm(convert, datalonEmployerId);

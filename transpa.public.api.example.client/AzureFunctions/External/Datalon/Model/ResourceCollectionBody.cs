@@ -1,12 +1,10 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace TransPA.OpenSource.External.Datalon.Model
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
     public class ResourceCollectionBody<T>
     {
-        public ICollection<T> collection { get; set; } = null!;
+        [DataMember(Name = "collection", EmitDefaultValue = false)]
+        public ICollection<T> Collection { get; set; } = null!;
     }
 }

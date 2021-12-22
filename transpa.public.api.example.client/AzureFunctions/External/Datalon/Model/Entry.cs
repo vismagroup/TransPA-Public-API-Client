@@ -1,15 +1,28 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Runtime.Serialization;
 
 namespace TransPA.OpenSource.External.Datalon.Model;
 
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-[SuppressMessage("ReSharper", "UnusedMember.Global")]
-[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
 public class Entry
 {
-    public string entryId { get; set; } = null!;
-    public string employeeId { get; set; } = null!;
-    public string payTypeCode { get; set; } = null!;
-    public int value { get; set; }
-    public string comment { get; set; } = null!;
+    public Entry(string entryId = default!, string employeeId = default!, string payTypeCode = default!, int value = default, string comment = default!)
+    {
+        EntryId = entryId;
+        EmployeeId = employeeId;
+        PayTypeCode = payTypeCode;
+        Value = value;
+        Comment = comment;
+    }
+
+    [DataMember(Name = "entryId", EmitDefaultValue = false)]
+    public string EntryId { get; set; }
+    [DataMember(Name = "employeeId", EmitDefaultValue = false)]
+    public string EmployeeId { get; set; }
+
+    [DataMember(Name = "payTypeCode", EmitDefaultValue = false)]
+    public string PayTypeCode { get; set; }
+
+    [DataMember(Name = "value", EmitDefaultValue = false)]
+    public int Value { get; set; }
+    [DataMember(Name = "comment", EmitDefaultValue = false)]
+    public string Comment { get; set; }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -109,9 +110,9 @@ public class DatalonApiClient : IDatalonApiClient
         var datalonNonUniqueEmployeeNumber = employeeNumber.Substring(2);
         var datalonSalaryPeriodCode = employeeNumber.Substring(0, 2);
 
-        return employees.collection
-            .First(e => e.employeeNumber.Equals(datalonNonUniqueEmployeeNumber) && e.salaryPeriodCode.Equals(datalonSalaryPeriodCode))
-            .employeeId;
+        return employees.Collection
+            .First(e => e.EmployeeNumber.Equals(datalonNonUniqueEmployeeNumber) && e.SalaryPeriodCode.Equals(datalonSalaryPeriodCode))
+            .EmployeeId;
     }
 
     public async Task<ICollection<Form>> GetFormsForEmployee(Salary salary, string employerId, string employeeId)
@@ -123,19 +124,19 @@ public class DatalonApiClient : IDatalonApiClient
         var jsonBody = await responseMessage.Content.ReadAsStringAsync();
         var response = JsonConvert.DeserializeObject<ResourceCollectionBodyExtended<Form>>(jsonBody);
 
-        if (response.totalCount == response.pageSize)
+        if (response.TotalCount == response.PageSize)
         {
             _log.LogError(
-                $"Reading committed forms return more than we built support for ({response.totalCount}). Value need to be adjusted, or read next value");
+                $"Reading committed forms return more than we built support for ({response.TotalCount}). Value need to be adjusted, or read next value");
         }
 
-        var forms = response.collection;
+        var forms = response.Collection;
         if (!forms.Any())
         {
             return forms;
         }
 
-        return forms.Where(f => f.entries.First().employeeId.Equals(employeeId) && f.state.Equals(FormStatusCommitted)).ToList();
+        return forms.Where(f => f.Entries.First().EmployeeId.Equals(employeeId) && f.State.Equals(FormStatusCommitted)).ToList();
     }
 
     public async Task<bool> ArchiveForm(string formId, string employerId)
@@ -158,7 +159,7 @@ public class DatalonApiClient : IDatalonApiClient
             $"{_datalonApiHost}/api/input/salary/{employerId}/forms/commit");
         var requestBody = new ResourceCollectionBody<Form>()
         {
-            collection = new List<Form>()
+            Collection = new List<Form>()
             {
                 form
             }
@@ -183,15 +184,21 @@ public class DatalonApiClient : IDatalonApiClient
         }
     }
 
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    [SuppressMessage("ReSharper", "UnusedMember.Local")]
-    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
-    [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]
     internal class EmployeeResponseBody
     {
-        public string employeeId { get; set; } = null!;
-        public string employeeNumber { get; set; } = null!;
-        public string salaryPeriodCode { get; set; } = null!;
+        public EmployeeResponseBody(string employeeId = default!, string employeeNumber =default!, string salaryPeriodCode = default!)
+        {
+            EmployeeId = employeeId;
+            EmployeeNumber = employeeNumber;
+            SalaryPeriodCode = salaryPeriodCode;
+        }
+
+        [DataMember(Name = "employeeId", EmitDefaultValue = false)]
+        public string EmployeeId { get; set; }
+        [DataMember(Name = "employeeNumber", EmitDefaultValue = false)]
+        public string EmployeeNumber { get; set; }
+        [DataMember(Name = "salaryPeriodCode", EmitDefaultValue = false)]
+        public string SalaryPeriodCode { get; set; }
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]

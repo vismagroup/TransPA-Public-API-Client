@@ -51,18 +51,18 @@ public class SalaryConverterTest
         var form = _testee.Convert(salary, DatalonEmployeeId);
 
         // Assert
-        var formEntries = form.entries;
+        var formEntries = form.Entries;
         formEntries.Count.Should().Be(2);
         var entries = formEntries.ToList();
         
-        entries[0].employeeId.Should().Be(DatalonEmployeeId);
-        entries[0].value.Should().Be(QuantityInDatalonFormat);
-        entries[0].payTypeCode.Should().Be(PayTypeCodeQuantityPart);
+        entries[0].EmployeeId.Should().Be(DatalonEmployeeId);
+        entries[0].Value.Should().Be(QuantityInDatalonFormat);
+        entries[0].PayTypeCode.Should().Be(PayTypeCodeQuantityPart);
         
         
-        entries[1].employeeId.Should().Be(DatalonEmployeeId);
-        entries[1].value.Should().Be(UnitPriceInDatalonFormat);
-        entries[1].payTypeCode.Should().Be(PayTypeCodeUnitPricePart);
+        entries[1].EmployeeId.Should().Be(DatalonEmployeeId);
+        entries[1].Value.Should().Be(UnitPriceInDatalonFormat);
+        entries[1].PayTypeCode.Should().Be(PayTypeCodeUnitPricePart);
     }
 
     [Test]
@@ -92,14 +92,14 @@ public class SalaryConverterTest
         var form = _testee.Convert(salary, DatalonEmployeeId);
 
         // Assert
-        var formEntries = form.entries;
+        var formEntries = form.Entries;
         formEntries.Count.Should().Be(1);
         var entries = formEntries.ToList();
 
         var entry = entries[0];
-        entry.employeeId.Should().Be(DatalonEmployeeId);
-        entry.value.Should().Be(TimeRowQuantityInDatalonFormat);
-        entry.payTypeCode.Should().Be(PayTypeCodeTimeRow);
+        entry.EmployeeId.Should().Be(DatalonEmployeeId);
+        entry.Value.Should().Be(TimeRowQuantityInDatalonFormat);
+        entry.PayTypeCode.Should().Be(PayTypeCodeTimeRow);
     }
     
     [Test]
@@ -128,7 +128,7 @@ public class SalaryConverterTest
         var form = _testee.Convert(salary, DatalonEmployeeId);
 
         // Assert
-        var formEntries = form.entries;
+        var formEntries = form.Entries;
         formEntries.Count.Should().Be(0);
     }
 }
