@@ -92,7 +92,7 @@ public class PublicApiClient : IPublicApiClient
             throw new Exception("Connect host is missing");
         }
 
-        return $"https://{Environment.GetEnvironmentVariable(TranspaPublicApiConfigurationNameConstants.VismaConnectHost)}/connect/token";
+        return $"https://{connectHost}/connect/token";
     }
 
     public async Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated)

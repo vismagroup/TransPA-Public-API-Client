@@ -27,42 +27,49 @@ public class DatalonApiClient : IDatalonApiClient
 
     private readonly HttpClient _client;
     private readonly ILogger<DatalonApiClient> _log;
+    private readonly string _datalonApiHost;
+    private readonly string _datalonOauthApiHost;
+    private readonly string _apimSubscriptionKey;
 
     public DatalonApiClient(IHttpClientFactory httpClientFactory, ILogger<DatalonApiClient> log)
     {
         _client = httpClientFactory.CreateClient();
         _log = log;
+        _datalonApiHost =  Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost) ?? "https://preprod-dataloen-api.bluegarden.dk";
+
+        if (String.IsNullOrEmpty(_datalonApiHost))
+        {
+            _log.LogError("DataLonApiHost is not set");
+        }
+        
+        _datalonOauthApiHost = Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonOauthApiHost) ?? "";
+        if (String.IsNullOrEmpty(_datalonOauthApiHost))
+        {
+            _log.LogError("datalonApiHost is not set");
+        }
+        
+        _apimSubscriptionKey = Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.OcpApimSubscriptionKey) ?? "";
+        if (String.IsNullOrEmpty(_apimSubscriptionKey))
+        {
+            _log.LogError("Ocp-Apim-Subscription-Key is not set");
+        }
     }
 
     public async Task SetAuthenticationHeader(string datalonRefreshToken) // Corresponds to tenant_id in TransPA
     {
-        var apimSubscriptionKey = Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.OcpApimSubscriptionKey) ?? "";
-        if (String.IsNullOrEmpty(apimSubscriptionKey))
-        {
-            _log.LogError("Ocp-Apim-Subscription-Key is not set");
-            throw new Exception("Ocp-Apim-Subscription-Key is not set");
-        }
-
         if (!_client.DefaultRequestHeaders.Contains("Ocp-Apim-Subscription-Key"))
         {
-            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apimSubscriptionKey);
+            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _apimSubscriptionKey);
         }
 
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", await GetBearerTokenAsync(datalonRefreshToken));
     }
 
-    public async Task<string> GetBearerTokenAsync(string refreshToken)
+    private async Task<string> GetBearerTokenAsync(string refreshToken)
     {
-        var datalonApi = Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonOauthApiHost) ?? "";
-        if (String.IsNullOrEmpty(datalonApi))
-        {
-            _log.LogError("datalonApiHost is missing");
-            throw new Exception("datalonApiHost is missing");
-        }
-
         var body = new BearerTokenRequestBody(refreshToken);
-        var request = new HttpRequestMessage(HttpMethod.Post, $"{datalonApi}/api/LoginRefreshToken");
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{_datalonOauthApiHost}/api/LoginRefreshToken");
 
         request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
 
@@ -84,7 +91,7 @@ public class DatalonApiClient : IDatalonApiClient
     {
         var responseMessage =
             await _client.GetAsync(
-                $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary");
+                $"{_datalonApiHost}/api/input/salary");
         var jsonBody = await responseMessage.Content.ReadAsStringAsync();
         var root = JsonConvert.DeserializeObject<SalaryRootResponseBody>(jsonBody);
 
@@ -95,7 +102,7 @@ public class DatalonApiClient : IDatalonApiClient
     {
         var responseMessage =
             await _client.GetAsync(
-                $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/employees");
+                $"{_datalonApiHost}/api/input/salary/{employerId}/employees");
         var jsonBody = await responseMessage.Content.ReadAsStringAsync();
         var employees = JsonConvert.DeserializeObject<ResourceCollectionBody<EmployeeResponseBody>>(jsonBody);
 
@@ -111,7 +118,7 @@ public class DatalonApiClient : IDatalonApiClient
     {
         var responseMessage =
             await _client.GetAsync(
-                $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/forms?from={salary.StartDate}&to={salary.EndDate}&pageSize=5000");
+                $"{_datalonApiHost}/api/input/salary/{employerId}/forms?from={salary.StartDate}&to={salary.EndDate}&pageSize=5000");
 
         var jsonBody = await responseMessage.Content.ReadAsStringAsync();
         var response = JsonConvert.DeserializeObject<ResourceCollectionBodyExtended<Form>>(jsonBody);
@@ -134,7 +141,7 @@ public class DatalonApiClient : IDatalonApiClient
     public async Task<bool> ArchiveForm(string formId, string employerId)
     {
         var request = new HttpRequestMessage(HttpMethod.Post,
-            $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/forms/archive/{formId}");
+            $"{_datalonApiHost}/api/input/salary/{employerId}/forms/archive/{formId}");
 
         var responseMessage = await _client.SendAsync(request);
         if (!responseMessage.IsSuccessStatusCode)
@@ -148,7 +155,7 @@ public class DatalonApiClient : IDatalonApiClient
     public async Task<bool> CommitForm(Form form, string employerId)
     {
         var request = new HttpRequestMessage(HttpMethod.Post,
-            $"{Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.DatalonApiHost)}/api/input/salary/{employerId}/forms/commit");
+            $"{_datalonApiHost}/api/input/salary/{employerId}/forms/commit");
         var requestBody = new ResourceCollectionBody<Form>()
         {
             collection = new List<Form>()
