@@ -6,6 +6,12 @@
                 "isEnabled": true,
                 "excludedTypes": "Request"
             }
+        },
+        "LogLevel": {
+          "Default": "Debug",
+           "System": "Information",
+           "Microsoft": "Information",
+          "TransPA.OpenSource": "Debug"
         }
     }
 }
