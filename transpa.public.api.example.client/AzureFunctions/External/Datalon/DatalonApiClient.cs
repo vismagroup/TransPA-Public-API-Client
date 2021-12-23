@@ -31,6 +31,7 @@ public class DatalonApiClient : IDatalonApiClient
     private readonly string _datalonApiHost;
     private readonly string _datalonOauthApiHost;
     private readonly string _apimSubscriptionKey;
+    private const string DateFormat = "dd/MM/yyyy";
 
     public DatalonApiClient(IHttpClientFactory httpClientFactory, ILogger<DatalonApiClient> log)
     {
@@ -117,9 +118,11 @@ public class DatalonApiClient : IDatalonApiClient
 
     public async Task<ICollection<Form>> GetFormsForEmployee(Salary salary, string employerId, string employeeId)
     {
+        var requestUri = $"{_datalonApiHost}/api/input/salary/{employerId}/forms?from={ salary.StartDate.ToString(DateFormat)}&to={salary.EndDate.ToString(DateFormat)}&pageSize=5000";
+        _log.LogDebug($"GetForms uri {requestUri}");
         var responseMessage =
             await _client.GetAsync(
-                $"{_datalonApiHost}/api/input/salary/{employerId}/forms?from={salary.StartDate}&to={salary.EndDate}&pageSize=5000");
+                requestUri);
 
         var jsonBody = await responseMessage.Content.ReadAsStringAsync();
         var response = JsonConvert.DeserializeObject<ResourceCollectionBodyExtended<Form>>(jsonBody);

@@ -1,17 +1,18 @@
 {
-    "version": "2.0",
-    "logging": {
-        "applicationInsights": {
-            "samplingSettings": {
-                "isEnabled": true,
-                "excludedTypes": "Request"
-            }
-        },
-        "LogLevel": {
-          "Default": "Debug",
-           "System": "Information",
-           "Microsoft": "Information",
-          "TransPA.OpenSource": "Debug"
-        }
+  "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "excludedTypes": "Request"
+      }
+    },
+    "LogLevel": {
+      "Default": "Information",
+      "System": "Information",
+      "Microsoft": "Warning",
+      "Host": "Information",
+      "TransPA.OpenSource": "Debug"
     }
+  }
 }
