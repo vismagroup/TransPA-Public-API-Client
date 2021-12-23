@@ -120,9 +120,7 @@ public class DatalonApiClient : IDatalonApiClient
     {
         var requestUri = $"{_datalonApiHost}/api/input/salary/{employerId}/forms?from={ salary.StartDate.ToString(DateFormat)}&to={salary.EndDate.ToString(DateFormat)}&pageSize=5000";
         _log.LogDebug($"GetForms uri {requestUri}");
-        var responseMessage =
-            await _client.GetAsync(
-                requestUri);
+        var responseMessage = await _client.GetAsync(requestUri);
 
         var jsonBody = await responseMessage.Content.ReadAsStringAsync();
         var response = JsonConvert.DeserializeObject<ResourceCollectionBodyExtended<Form>>(jsonBody);
