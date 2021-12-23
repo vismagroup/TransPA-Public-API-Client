@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions", "AzureFunctions\AzureFunctions.csproj", "{30C0C27A-919F-4237-B2F0-2462A0212D20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "transpa.api.generated", "..\oas.generated\src\transpa.api.generated\transpa.api.generated.csproj", "{79C18FBD-32D7-445E-BAC6-85C0AE1D52BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions.Test", "AzureFunctions.Test\AzureFunctions.Test.csproj", "{6368DF44-B8B5-4B49-8EB8-E5D86D640B6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{30C0C27A-919F-4237-B2F0-2462A0212D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30C0C27A-919F-4237-B2F0-2462A0212D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30C0C27A-919F-4237-B2F0-2462A0212D20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79C18FBD-32D7-445E-BAC6-85C0AE1D52BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79C18FBD-32D7-445E-BAC6-85C0AE1D52BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79C18FBD-32D7-445E-BAC6-85C0AE1D52BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79C18FBD-32D7-445E-BAC6-85C0AE1D52BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6368DF44-B8B5-4B49-8EB8-E5D86D640B6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6368DF44-B8B5-4B49-8EB8-E5D86D640B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6368DF44-B8B5-4B49-8EB8-E5D86D640B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6368DF44-B8B5-4B49-8EB8-E5D86D640B6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
