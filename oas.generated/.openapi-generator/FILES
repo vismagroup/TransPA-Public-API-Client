@@ -7,6 +7,7 @@ docs/ConnectUsersApi.md
 docs/CursorDto.md
 docs/Employee.md
 docs/EmployeesApi.md
+docs/HttpHeader.md
 docs/InlineObject.md
 docs/InlineResponse200.md
 docs/InlineResponse2001.md
@@ -14,6 +15,7 @@ docs/InlineResponse2002.md
 docs/InlineResponse2003.md
 docs/InlineResponse2004.md
 docs/InlineResponse2005.md
+docs/InlineResponse2006.md
 docs/Money.md
 docs/Problem.md
 docs/SalariesApi.md
@@ -21,6 +23,7 @@ docs/Salary.md
 docs/SalaryCreated.md
 docs/SalaryDetails.md
 docs/SalaryDetails1.md
+docs/SalaryExportFailed.md
 docs/SalaryTimeRows.md
 docs/SalaryWageRows.md
 docs/StationPlace.md
@@ -31,7 +34,14 @@ docs/Vehicle.md
 docs/VehicleGroup.md
 docs/VehicleGroupsApi.md
 docs/VehiclesApi.md
+docs/WorkTask.md
+docs/WorkTasksApi.md
 git_push.sh
+src/transpa.api.generated.Test/Api/WorkTasksApiTests.cs
+src/transpa.api.generated.Test/Model/HttpHeaderTests.cs
+src/transpa.api.generated.Test/Model/InlineResponse2006Tests.cs
+src/transpa.api.generated.Test/Model/SalaryExportFailedTests.cs
+src/transpa.api.generated.Test/Model/WorkTaskTests.cs
 src/transpa.api.generated.Test/transpa.api.generated.Test.csproj
 src/transpa.api.generated/Api/AliveApi.cs
 src/transpa.api.generated/Api/ConnectUsersApi.cs
@@ -41,6 +51,7 @@ src/transpa.api.generated/Api/StationPlacesApi.cs
 src/transpa.api.generated/Api/TrafficAreasApi.cs
 src/transpa.api.generated/Api/VehicleGroupsApi.cs
 src/transpa.api.generated/Api/VehiclesApi.cs
+src/transpa.api.generated/Api/WorkTasksApi.cs
 src/transpa.api.generated/Client/ApiClient.cs
 src/transpa.api.generated/Client/ApiException.cs
 src/transpa.api.generated/Client/ApiResponse.cs
@@ -61,6 +72,7 @@ src/transpa.api.generated/Model/AbstractOpenAPISchema.cs
 src/transpa.api.generated/Model/ConnectUser.cs
 src/transpa.api.generated/Model/CursorDto.cs
 src/transpa.api.generated/Model/Employee.cs
+src/transpa.api.generated/Model/HttpHeader.cs
 src/transpa.api.generated/Model/InlineObject.cs
 src/transpa.api.generated/Model/InlineResponse200.cs
 src/transpa.api.generated/Model/InlineResponse2001.cs
@@ -68,17 +80,20 @@ src/transpa.api.generated/Model/InlineResponse2002.cs
 src/transpa.api.generated/Model/InlineResponse2003.cs
 src/transpa.api.generated/Model/InlineResponse2004.cs
 src/transpa.api.generated/Model/InlineResponse2005.cs
+src/transpa.api.generated/Model/InlineResponse2006.cs
 src/transpa.api.generated/Model/Money.cs
 src/transpa.api.generated/Model/Problem.cs
 src/transpa.api.generated/Model/Salary.cs
 src/transpa.api.generated/Model/SalaryCreated.cs
 src/transpa.api.generated/Model/SalaryDetails.cs
 src/transpa.api.generated/Model/SalaryDetails1.cs
+src/transpa.api.generated/Model/SalaryExportFailed.cs
 src/transpa.api.generated/Model/SalaryTimeRows.cs
 src/transpa.api.generated/Model/SalaryWageRows.cs
 src/transpa.api.generated/Model/StationPlace.cs
 src/transpa.api.generated/Model/TrafficArea.cs
 src/transpa.api.generated/Model/Vehicle.cs
 src/transpa.api.generated/Model/VehicleGroup.cs
+src/transpa.api.generated/Model/WorkTask.cs
 src/transpa.api.generated/transpa.api.generated.csproj
 transpa.api.generated.sln

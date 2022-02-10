@@ -1,10 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "transpa.api.generated", "src\transpa.api.generated\transpa.api.generated.csproj", "{CAEC017A-F337-47F2-8A72-FE1AA06AB06E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "transpa.api.generated", "src\transpa.api.generated\transpa.api.generated.csproj", "{BCF48373-06CF-48C5-BD8B-F3C9A83DAE11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "transpa.api.generated.Test", "src\transpa.api.generated.Test\transpa.api.generated.Test.csproj", "{19F1DEBC-DE5E-4517-8062-F000CD499087}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "transpa.api.generated.Test", "src\transpa.api.generated.Test\transpa.api.generated.Test.csproj", "{19F1DEBC-DE5E-4517-8062-F000CD499087}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,10 +12,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CAEC017A-F337-47F2-8A72-FE1AA06AB06E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CAEC017A-F337-47F2-8A72-FE1AA06AB06E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CAEC017A-F337-47F2-8A72-FE1AA06AB06E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CAEC017A-F337-47F2-8A72-FE1AA06AB06E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCF48373-06CF-48C5-BD8B-F3C9A83DAE11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCF48373-06CF-48C5-BD8B-F3C9A83DAE11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCF48373-06CF-48C5-BD8B-F3C9A83DAE11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCF48373-06CF-48C5-BD8B-F3C9A83DAE11}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -23,5 +23,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FABBD599-F1F8-4AAA-A826-ED7252B34380}
 	EndGlobalSection
 EndGlobal
