@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Web.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using transpa.api.generated.Model;
@@ -15,6 +16,10 @@ public interface IPublicApiClient
     Task SetAuthenticationHeaderAsync(string tenantId);
     Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated);
     Task<Employee> GetEmployeeAsync(string salaryEmployeeId, string resourceUrl);
+
+    Task<bool> setExportFailed(string resourceUrl, SalaryExportFailed salaryExportFailed);
+    Task<bool> setExportSuccess(string resourceUrl);
+
 }
 
 public class PublicApiClient : IPublicApiClient
@@ -142,6 +147,53 @@ public class PublicApiClient : IPublicApiClient
         }
 
         throw new Exception("Failed to read employee");
+    }
+
+    public async Task<bool> setExportFailed(string resourceUrl, SalaryExportFailed salaryExportFailed)
+    {
+        resourceUrl = string.Concat(resourceUrl, "/setExportFailed");
+
+        var stringContent = new StringContent(JsonConvert.SerializeObject(salaryExportFailed), Encoding.UTF8, "application/json");
+        var httpResponseMessage = await _client.PostAsync(resourceUrl, stringContent);
+        switch (httpResponseMessage.StatusCode)
+        {
+            case HttpStatusCode.Forbidden:
+            case HttpStatusCode.BadRequest:
+            case HttpStatusCode.Conflict:
+                _log.LogError(string.Format("{0} HttpStatusCode:{1}", httpResponseMessage.Content.ReadAsStringAsync().Result, httpResponseMessage.StatusCode));
+                break;
+            case HttpStatusCode.NoContent:
+                _log.LogInformation("Export set as failed.");
+                return true;
+            default:
+                _log.LogError($"An error occured when setting the export as failed. HttpStatusCode: {httpResponseMessage.StatusCode}");
+                break;
+        }
+
+        throw new Exception("Failed to set export as failed!");
+    }
+
+    public async Task<bool> setExportSuccess(string resourceUrl)
+    {
+        resourceUrl = string.Concat(resourceUrl, "/setExportSuccess");
+
+        var httpResponseMessage = await _client.PostAsync(resourceUrl, null);
+        switch (httpResponseMessage.StatusCode)
+        {
+            case HttpStatusCode.Forbidden:
+            case HttpStatusCode.BadRequest:
+            case HttpStatusCode.Conflict:
+                _log.LogError(string.Format("{0} HttpStatusCode:{1}", httpResponseMessage.Content.ReadAsStringAsync().Result, httpResponseMessage.StatusCode));
+                break;
+            case HttpStatusCode.NoContent:
+                _log.LogInformation("Export set as successful.");
+                return true;
+            default:
+                _log.LogError($"An error occured when setting the export as successful. HttpStatusCode: {httpResponseMessage.StatusCode}");
+                break;
+        }
+
+        throw new Exception("Failed to set export as successful!");
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]

@@ -12,20 +12,30 @@ public class EmployeeValidator : AbstractValidator<Employee>
     public EmployeeValidator(ILogger<DatalonApiClient> log)
     {
         _log = log;
-        RuleFor(x => x.EmployeeNumber).Must(IsEmployeeNumberCorrectlyFormatted);
+        RuleFor(x => x.EmployeeNumber).Must(IsEmployeeNumberNotNull).WithErrorCode("failedEmployeeNumberUnknown");
+        RuleFor(x => x.EmployeeNumber).Must(IsEmployeeNumberCorrectlyFormatted).WithErrorCode("failedEmployeeNumberBadFormat");
     }
-    
-    private bool IsEmployeeNumberCorrectlyFormatted(long? employeeNumber) {
+
+    private bool IsEmployeeNumberNotNull(long? employeeNumber) {
+        var isEmployeeNumberNotNull= true;
         if (employeeNumber == null)
         {
             _log.LogWarning("EmployeeNumber is not set");
             return false;
         }
 
-        var isEmployeeNumberCorrectlyFormatted = employeeNumber.Value.ToString().Length == 6;
-        if (!isEmployeeNumberCorrectlyFormatted)
+        return isEmployeeNumberNotNull;
+    }
+
+    private bool IsEmployeeNumberCorrectlyFormatted(long? employeeNumber) {
+        var isEmployeeNumberCorrectlyFormatted = true;
+        if (employeeNumber != null)
         {
-            _log.LogWarning("EmployeeNumber is not 6 characters long");
+            isEmployeeNumberCorrectlyFormatted = employeeNumber.Value.ToString().Length == 6;
+            if (!isEmployeeNumberCorrectlyFormatted)
+            {
+                _log.LogWarning("EmployeeNumber is not 6 characters long");
+            }
         }
         
         return isEmployeeNumberCorrectlyFormatted;
