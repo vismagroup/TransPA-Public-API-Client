@@ -62,8 +62,9 @@ namespace TransPA.OpenSource.Functions
             if (!employeeValidationResult.IsValid)
             {
                 // TODO: Report back handled error here in a later ticket
-                var sef = new SalaryExportFailed { StatusCode = employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault() };
-                await _publicApiClient.setExportFailed(salaryCreated.ResourceUrl, sef);
+
+                var sef = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
+                await _publicApiClient.setExportFailedAsync(salaryCreated.ResourceUrl, sef);
 
                 return _httpObjectResultHelper.GetBadRequestResult("EmployeeNumber is not properly configured in TransPA");
             }
@@ -72,8 +73,8 @@ namespace TransPA.OpenSource.Functions
             if (!salaryValidationResult.IsValid)
             {
                 // TODO: Report back handled error here in a later ticket
-                var sef = new SalaryExportFailed { StatusCode = salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault() };
-                await _publicApiClient.setExportFailed(salaryCreated.ResourceUrl, sef);
+                var sef = new SalaryExportFailed(salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
+                await _publicApiClient.setExportFailedAsync(salaryCreated.ResourceUrl, sef);
 
                 return _httpObjectResultHelper.GetBadRequestResult(salaryValidationResult.Errors.First().ErrorMessage);
             }
@@ -105,12 +106,12 @@ namespace TransPA.OpenSource.Functions
             }
             catch (Exception ex)
             {
-                await _publicApiClient.setExportFailed(salaryCreated.ResourceUrl, new SalaryExportFailed { StatusCode = "failedUnspecified" });
+                await _publicApiClient.setExportFailedAsync(salaryCreated.ResourceUrl, new SalaryExportFailed { StatusCode = "failedUnspecified" });
                 log.LogError(ex.Message);
                 throw new Exception(ex.Message);
             }
 
-            return new OkObjectResult(await _publicApiClient.setExportSuccess(salaryCreated.ResourceUrl));
+            return new OkObjectResult(await _publicApiClient.setExportSuccessAsync(salaryCreated.ResourceUrl));
 
             //return
             //    new OkObjectResult(existingFormsForEmployee

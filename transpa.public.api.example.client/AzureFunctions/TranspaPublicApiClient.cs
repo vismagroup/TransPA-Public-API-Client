@@ -17,8 +17,8 @@ public interface IPublicApiClient
     Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated);
     Task<Employee> GetEmployeeAsync(string salaryEmployeeId, string resourceUrl);
 
-    Task<bool> setExportFailed(string resourceUrl, SalaryExportFailed salaryExportFailed);
-    Task<bool> setExportSuccess(string resourceUrl);
+    Task<bool> setExportFailedAsync(string resourceUrl, SalaryExportFailed salaryExportFailed);
+    Task<bool> setExportSuccessAsync(string resourceUrl);
 
 }
 
@@ -68,7 +68,7 @@ public class PublicApiClient : IPublicApiClient
         }
 
         var body =
-            $"grant_type=client_credentials&transpaapi:salaries:read+transpaapi:api+transpaapi:employees:read&client_id={clientId}&client_secret={clientSecret}&tenant_id={tenantId}";
+            $"grant_type=client_credentials&transpaapi:salaries:read+transpaapi:api+transpaapi:employees+transpaapi:salaries:write:read&client_id={clientId}&client_secret={clientSecret}&tenant_id={tenantId}";
 
         var request = new HttpRequestMessage(HttpMethod.Post, GetBearerTokenUrl());
         request.Headers.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
@@ -149,7 +149,7 @@ public class PublicApiClient : IPublicApiClient
         throw new Exception("Failed to read employee");
     }
 
-    public async Task<bool> setExportFailed(string resourceUrl, SalaryExportFailed salaryExportFailed)
+    public async Task<bool> setExportFailedAsync(string resourceUrl, SalaryExportFailed salaryExportFailed)
     {
         resourceUrl = string.Concat(resourceUrl, "/setExportFailed");
 
@@ -173,7 +173,7 @@ public class PublicApiClient : IPublicApiClient
         throw new Exception("Failed to set export as failed!");
     }
 
-    public async Task<bool> setExportSuccess(string resourceUrl)
+    public async Task<bool> setExportSuccessAsync(string resourceUrl)
     {
         resourceUrl = string.Concat(resourceUrl, "/setExportSuccess");
 
