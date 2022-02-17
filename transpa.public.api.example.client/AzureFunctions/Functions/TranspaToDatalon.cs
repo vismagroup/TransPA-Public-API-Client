@@ -62,7 +62,6 @@ namespace TransPA.OpenSource.Functions
             if (!employeeValidationResult.IsValid)
             {
                 // TODO: Report back handled error here in a later ticket
-
                 var sef = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
                 await _publicApiClient.setExportFailedAsync(salaryCreated.ResourceUrl, sef);
 

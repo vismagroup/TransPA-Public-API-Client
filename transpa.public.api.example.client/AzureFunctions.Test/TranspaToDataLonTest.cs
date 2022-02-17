@@ -31,7 +31,6 @@ public class TranspaToDataLonTest
         _salaryCreated = new SalaryCreated(tenantId: "aaaa-bbbb-cccc-dddd", title: "A salary resource was created",
             resourceUrl: "https://example.test");
 
-        _salaryExportFailed = new SalaryExportFailed("failedEmployeeNumberUnknown");
 
         _publicApiClientMock = new Mock<IPublicApiClient>();
         _datalonApiClientMock = new Mock<IDatalonApiClient>();
@@ -45,6 +44,7 @@ public class TranspaToDataLonTest
         // Arrange
         var employeeNumberMissing = new Employee(employeeNumber: null);
         _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employeeNumberMissing);
+
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(new Salary(employeeId: TranspaEmployeeId));
 
         // Act
@@ -63,6 +63,8 @@ public class TranspaToDataLonTest
         var employeeWithEmployeeNumberWithBadFormat = new Employee(employeeNumber: 24035);
         _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employeeWithEmployeeNumberWithBadFormat);
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(new Salary(employeeId: TranspaEmployeeId));
+        
+        _salaryExportFailed = new SalaryExportFailed("failedEmployeeNumberBadFormat");
         _publicApiClientMock.Setup(x => x.setExportFailedAsync(_salaryCreated.ResourceUrl, _salaryExportFailed)).ReturnsAsync(true);
 
         // Act
@@ -90,6 +92,8 @@ public class TranspaToDataLonTest
             new SalaryTimeRows(timeRowPayTypeCode)
         });
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(salary);
+
+        _salaryExportFailed = new SalaryExportFailed("failedPayTypeCodeUnknown");
         _publicApiClientMock.Setup(x => x.setExportFailedAsync(_salaryCreated.ResourceUrl, _salaryExportFailed)).ReturnsAsync(true);
 
         // Act
