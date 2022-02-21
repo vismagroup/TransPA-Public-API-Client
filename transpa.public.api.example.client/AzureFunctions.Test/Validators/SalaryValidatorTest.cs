@@ -14,6 +14,8 @@ namespace AzureFunctions.Test.Validators
 
         private const string WrongPayTypeCodeForTimeRow = "500652";
         private const string WrongPayTypeCodeForWageRow = "600567";
+        private const string StatusCodeUnknown = "failedPayTypeCodeUnknown";
+        private const string StatusCodeBadFormat = "failedPayTypeCodeBadFormat";
 
         [SetUp]
         public void SetUp()
@@ -32,7 +34,7 @@ namespace AzureFunctions.Test.Validators
 
             //Assert
             validatorResult.IsValid.Should().BeFalse();
-            validatorResult.Errors.Select(x => x.ErrorCode).FirstOrDefault().Should().Be("failedPayTypeCodeUnknown");
+            validatorResult.Errors.Select(x => x.ErrorCode).FirstOrDefault().Should().Be(StatusCodeUnknown);
         }
 
         [TestCase(WrongPayTypeCodeForTimeRow, WrongPayTypeCodeForWageRow)]
@@ -46,8 +48,7 @@ namespace AzureFunctions.Test.Validators
 
             //Assert
             validatorResult.IsValid.Should().BeFalse();
-            validatorResult.Errors.Select(x => x.ErrorCode).FirstOrDefault().Should().Be("failedPayTypeCodeBadFormat");
-
+            validatorResult.Errors.Select(x => x.ErrorCode).FirstOrDefault().Should().Be(StatusCodeBadFormat);
         }
 
         private Salary CreateSalary(string payTypeCodeForTimeRow, string payTypeCodeForWageRow)

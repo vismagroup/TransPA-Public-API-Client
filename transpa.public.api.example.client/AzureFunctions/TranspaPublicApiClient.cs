@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using transpa.api.generated.Model;
@@ -16,8 +17,8 @@ public interface IPublicApiClient
     Task SetAuthenticationHeaderAsync(string tenantId);
     Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated);
     Task<Employee> GetEmployeeAsync(string salaryEmployeeId, string resourceUrl);
-    Task<bool> SetExportFailedAsync(string resourceUrl, SalaryExportFailed salaryExportFailed);
-    Task<bool> SetExportSuccessAsync(string resourceUrl);
+    Task<bool> SetExportFailedAsync(string hostUrl, SalaryExportFailed salaryExportFailed, string salaryId);
+    Task<bool> SetExportSuccessAsync(string hostUrl, string salaryId);
 }
 
 public class PublicApiClient : IPublicApiClient
@@ -147,19 +148,23 @@ public class PublicApiClient : IPublicApiClient
         throw new Exception("Failed to read employee");
     }
 
-    public async Task<bool> SetExportFailedAsync(string resourceUrl, SalaryExportFailed salaryExportFailed)
+    public async Task<bool> SetExportFailedAsync(string hostUrl, SalaryExportFailed salaryExportFailed, string salaryId)
     {
-        resourceUrl = string.Concat(resourceUrl, "/setExportFailed");
+        var setExportFailedUrl = $"https://{hostUrl}/publicApi/v1/salaries/{salaryId}/setExportFailed";
 
         var stringContent = new StringContent(JsonConvert.SerializeObject(salaryExportFailed), Encoding.UTF8, "application/json");
-        var httpResponseMessage = await _client.PostAsync(resourceUrl, stringContent);
+        var httpResponseMessage = await _client.PostAsync(setExportFailedUrl, stringContent);
         switch (httpResponseMessage.StatusCode)
         {
             case HttpStatusCode.Forbidden:
             case HttpStatusCode.BadRequest:
             case HttpStatusCode.Conflict:
+                var jsonBody = await httpResponseMessage.Content.ReadAsStringAsync();
+                var responseBody = JsonConvert.DeserializeObject<ProblemDetails>(jsonBody);
+                _log.LogError($"Response detail: {responseBody.Detail}, status:{responseBody.Status}");
+                break;
             case HttpStatusCode.NotFound:
-                _log.LogError($"Response body {httpResponseMessage.Content.ReadAsStringAsync().Result} HttpStatusCode:{httpResponseMessage.StatusCode}");
+                _log.LogError($"Salary {salaryId} not found!");
                 break;
             case HttpStatusCode.NoContent:
                 _log.LogInformation("Export set as failed.");
@@ -172,18 +177,22 @@ public class PublicApiClient : IPublicApiClient
         throw new Exception("Failed to set export as failed!");
     }
 
-    public async Task<bool> SetExportSuccessAsync(string resourceUrl)
+    public async Task<bool> SetExportSuccessAsync(string hostUrl, string salaryId)
     {
-        resourceUrl = string.Concat(resourceUrl, "/setExportSuccess");
+        var setExportSuccessUrl = $"https://{hostUrl}/publicApi/v1/salaries/{salaryId}/setExportSuccess";
 
-        var httpResponseMessage = await _client.PostAsync(resourceUrl, null);
+        var httpResponseMessage = await _client.PostAsync(setExportSuccessUrl, null);
         switch (httpResponseMessage.StatusCode)
         {
             case HttpStatusCode.Forbidden:
             case HttpStatusCode.BadRequest:
             case HttpStatusCode.Conflict:
+                var jsonBody = await httpResponseMessage.Content.ReadAsStringAsync();
+                var responseBody = JsonConvert.DeserializeObject<ProblemDetails>(jsonBody);
+                _log.LogError($"Response detail: {responseBody.Detail}, status:{responseBody.Status}");
+                break;
             case HttpStatusCode.NotFound:
-                _log.LogError($"Response body {httpResponseMessage.Content.ReadAsStringAsync().Result} HttpStatusCode:{httpResponseMessage.StatusCode}");
+                _log.LogError($"Salary {salaryId} not found!");
                 break;
             case HttpStatusCode.NoContent:
                 _log.LogInformation("Export set as successful.");

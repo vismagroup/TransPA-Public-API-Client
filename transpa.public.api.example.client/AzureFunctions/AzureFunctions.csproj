@@ -25,10 +25,14 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       </None>
+    </ItemGroup> 
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\oas.generated\src\transpa.api.generated\transpa.api.generated.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\oas.generated\src\transpa.api.generated\transpa.api.generated.csproj" />
+        <Folder Include="External" />
     </ItemGroup>
 
     <ItemGroup>

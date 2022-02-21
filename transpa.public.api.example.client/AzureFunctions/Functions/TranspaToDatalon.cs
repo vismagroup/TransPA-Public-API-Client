@@ -65,7 +65,7 @@ namespace TransPA.OpenSource.Functions
             if (!employeeValidationResult.IsValid)
             {
                 var salaryExportFailed = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
-                await _publicApiClient.SetExportFailedAsync(salaryCreated.ResourceUrl, salaryExportFailed);
+                await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
 
                 return _httpObjectResultHelper.GetBadRequestResult("EmployeeNumber is not properly configured in TransPA");
             }
@@ -74,7 +74,7 @@ namespace TransPA.OpenSource.Functions
             if (!salaryValidationResult.IsValid)
             {
                 var salaryExportFailed = new SalaryExportFailed(salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
-                await _publicApiClient.SetExportFailedAsync(salaryCreated.ResourceUrl, salaryExportFailed);
+                await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
 
                 return _httpObjectResultHelper.GetBadRequestResult(salaryValidationResult.Errors.First().ErrorMessage);
             }
@@ -88,7 +88,6 @@ namespace TransPA.OpenSource.Functions
                 throw new Exception("Missing DataLon refreshToken");
             }
 
-            int count = 0;
             try
             {
                 await _datalonApiClient
@@ -102,21 +101,19 @@ namespace TransPA.OpenSource.Functions
                 await Parallel.ForEachAsync(existingFormsForEmployee,
                     async (form, cancellationToken) => await _datalonApiClient.ArchiveForm(form.FormId, datalonEmployerId));
 
-                count = existingFormsForEmployee.Count();
-
                 var convert = _salaryConverter.Convert(salary, datalonEmployeeId);
                 await _datalonApiClient.CommitForm(convert, datalonEmployerId);
             }
             catch (Exception ex)
             {
-                await _publicApiClient.SetExportFailedAsync(salaryCreated.ResourceUrl, new SalaryExportFailed { StatusCode = FailedUnspecified });
-                log.LogError(ex.Message);
-                throw new Exception(ex.Message);
+                await _publicApiClient.SetExportFailedAsync(uri.Host, new SalaryExportFailed { StatusCode = FailedUnspecified }, salary.Id);
+                log.LogError("Failed in an unexpected way.", ex);
+                throw;
             }
 
-            await _publicApiClient.SetExportSuccessAsync(salaryCreated.ResourceUrl);
+            await _publicApiClient.SetExportSuccessAsync(uri.Host, salary.Id);
 
-            return new OkObjectResult(count);
+            return new OkObjectResult("");
         }
     }
 }
