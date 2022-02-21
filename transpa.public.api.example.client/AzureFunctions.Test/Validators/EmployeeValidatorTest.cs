@@ -15,7 +15,7 @@ namespace AzureFunctions.Test.Validators
         [SetUp]
         public void SetUp()
         {
-            _employeeValidator = new EmployeeValidator(new Mock<ILogger<DatalonApiClient>>().Object);
+            _employeeValidator = new EmployeeValidator(new Mock<ILogger<EmployeeValidator>>().Object);
         }
 
         [TestCase(null)]
@@ -32,7 +32,7 @@ namespace AzureFunctions.Test.Validators
             validatorResult.Errors.Select(x => x.ErrorCode).FirstOrDefault().Should().Be("failedEmployeeNumberUnknown");
         }
 
-        [TestCase("000001")]
+        [TestCase("2410100")]
         public void ShouldReturnFalseIfPayTypeCodeBadFormat(long? employeeNumber)
         {
             //Arrange

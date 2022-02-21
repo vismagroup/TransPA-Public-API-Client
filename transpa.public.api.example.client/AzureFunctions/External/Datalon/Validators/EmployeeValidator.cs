@@ -7,13 +7,16 @@ namespace TransPA.OpenSource.External.Datalon;
 
 public class EmployeeValidator : AbstractValidator<Employee>
 {
-    private readonly ILogger<DatalonApiClient> _log;
+    private readonly ILogger<EmployeeValidator> _log;
 
-    public EmployeeValidator(ILogger<DatalonApiClient> log)
+    internal const string EmployeeNumberUnknown = "failedEmployeeNumberUnknown";
+    internal const string EmployeeNumberBadFormat = "failedEmployeeNumberBadFormat";
+
+    public EmployeeValidator(ILogger<EmployeeValidator> log)
     {
         _log = log;
-        RuleFor(x => x.EmployeeNumber).Must(IsEmployeeNumberNotNull).WithErrorCode("failedEmployeeNumberUnknown");
-        RuleFor(x => x.EmployeeNumber).Must(IsEmployeeNumberCorrectlyFormatted).WithErrorCode("failedEmployeeNumberBadFormat");
+        RuleFor(x => x.EmployeeNumber).Must(IsEmployeeNumberNotNull).WithErrorCode(EmployeeNumberUnknown);
+        RuleFor(x => x.EmployeeNumber).Must(IsEmployeeNumberCorrectlyFormatted).WithErrorCode(EmployeeNumberBadFormat);
     }
 
     private bool IsEmployeeNumberNotNull(long? employeeNumber) {

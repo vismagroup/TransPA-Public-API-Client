@@ -35,7 +35,7 @@ public class TranspaToDataLonTest
         _publicApiClientMock = new Mock<IPublicApiClient>();
         _datalonApiClientMock = new Mock<IDatalonApiClient>();
         _testee = new TranspaToDatalon(_publicApiClientMock.Object, _datalonApiClientMock.Object, 
-            new EmployeeValidator(new Mock<ILogger<DatalonApiClient>>().Object), new SalaryValidator(), new SalaryConverter(), new HttpObjectResultHelper());
+            new EmployeeValidator(new Mock<ILogger<EmployeeValidator>>().Object), new SalaryValidator(), new SalaryConverter(), new HttpObjectResultHelper());
     }
 
     [Test]
@@ -65,7 +65,7 @@ public class TranspaToDataLonTest
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(new Salary(employeeId: TranspaEmployeeId));
         
         _salaryExportFailed = new SalaryExportFailed("failedEmployeeNumberBadFormat");
-        _publicApiClientMock.Setup(x => x.setExportFailedAsync(_salaryCreated.ResourceUrl, _salaryExportFailed)).ReturnsAsync(true);
+        _publicApiClientMock.Setup(x => x.SetExportFailedAsync(_salaryCreated.ResourceUrl, _salaryExportFailed)).ReturnsAsync(true);
 
         // Act
         var result = await _testee.ExportSalaryFromTranspaToDatalon(JsonConvert.SerializeObject(_salaryCreated),
@@ -94,7 +94,7 @@ public class TranspaToDataLonTest
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(salary);
 
         _salaryExportFailed = new SalaryExportFailed("failedPayTypeCodeUnknown");
-        _publicApiClientMock.Setup(x => x.setExportFailedAsync(_salaryCreated.ResourceUrl, _salaryExportFailed)).ReturnsAsync(true);
+        _publicApiClientMock.Setup(x => x.SetExportFailedAsync(_salaryCreated.ResourceUrl, _salaryExportFailed)).ReturnsAsync(true);
 
         // Act
         var result = await _testee.ExportSalaryFromTranspaToDatalon(JsonConvert.SerializeObject(_salaryCreated),

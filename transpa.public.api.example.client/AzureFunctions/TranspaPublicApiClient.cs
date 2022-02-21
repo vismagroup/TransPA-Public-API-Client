@@ -16,10 +16,8 @@ public interface IPublicApiClient
     Task SetAuthenticationHeaderAsync(string tenantId);
     Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated);
     Task<Employee> GetEmployeeAsync(string salaryEmployeeId, string resourceUrl);
-
-    Task<bool> setExportFailedAsync(string resourceUrl, SalaryExportFailed salaryExportFailed);
-    Task<bool> setExportSuccessAsync(string resourceUrl);
-
+    Task<bool> SetExportFailedAsync(string resourceUrl, SalaryExportFailed salaryExportFailed);
+    Task<bool> SetExportSuccessAsync(string resourceUrl);
 }
 
 public class PublicApiClient : IPublicApiClient
@@ -149,7 +147,7 @@ public class PublicApiClient : IPublicApiClient
         throw new Exception("Failed to read employee");
     }
 
-    public async Task<bool> setExportFailedAsync(string resourceUrl, SalaryExportFailed salaryExportFailed)
+    public async Task<bool> SetExportFailedAsync(string resourceUrl, SalaryExportFailed salaryExportFailed)
     {
         resourceUrl = string.Concat(resourceUrl, "/setExportFailed");
 
@@ -160,20 +158,21 @@ public class PublicApiClient : IPublicApiClient
             case HttpStatusCode.Forbidden:
             case HttpStatusCode.BadRequest:
             case HttpStatusCode.Conflict:
-                _log.LogError(string.Format("{0} HttpStatusCode:{1}", httpResponseMessage.Content.ReadAsStringAsync().Result, httpResponseMessage.StatusCode));
+            case HttpStatusCode.NotFound:
+                _log.LogError($"Response body {httpResponseMessage.Content.ReadAsStringAsync().Result} HttpStatusCode:{httpResponseMessage.StatusCode}");
                 break;
             case HttpStatusCode.NoContent:
                 _log.LogInformation("Export set as failed.");
                 return true;
             default:
-                _log.LogError($"An error occured when setting the export as failed. HttpStatusCode: {httpResponseMessage.StatusCode}");
+                _log.LogError($"Unexpected error occured when setting the export as failed. HttpStatusCode: {httpResponseMessage.StatusCode}");
                 break;
         }
 
         throw new Exception("Failed to set export as failed!");
     }
 
-    public async Task<bool> setExportSuccessAsync(string resourceUrl)
+    public async Task<bool> SetExportSuccessAsync(string resourceUrl)
     {
         resourceUrl = string.Concat(resourceUrl, "/setExportSuccess");
 
@@ -183,13 +182,14 @@ public class PublicApiClient : IPublicApiClient
             case HttpStatusCode.Forbidden:
             case HttpStatusCode.BadRequest:
             case HttpStatusCode.Conflict:
-                _log.LogError(string.Format("{0} HttpStatusCode:{1}", httpResponseMessage.Content.ReadAsStringAsync().Result, httpResponseMessage.StatusCode));
+            case HttpStatusCode.NotFound:
+                _log.LogError($"Response body {httpResponseMessage.Content.ReadAsStringAsync().Result} HttpStatusCode:{httpResponseMessage.StatusCode}");
                 break;
             case HttpStatusCode.NoContent:
                 _log.LogInformation("Export set as successful.");
                 return true;
             default:
-                _log.LogError($"An error occured when setting the export as successful. HttpStatusCode: {httpResponseMessage.StatusCode}");
+                _log.LogError($"Unexpected error occured when setting the export as successful. HttpStatusCode: {httpResponseMessage.StatusCode}");
                 break;
         }
 
