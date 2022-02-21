@@ -15,7 +15,7 @@ namespace AzureFunctions.Test.Validators
         [SetUp]
         public void SetUp()
         {
-            _employeeValidator = new EmployeeValidator(new Mock<ILogger<EmployeeValidator>>().Object);
+            _employeeValidator = new EmployeeValidator();
         }
 
         [TestCase(null)]
