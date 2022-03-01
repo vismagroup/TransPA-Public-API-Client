@@ -21,8 +21,13 @@ public class TranspaToDataLonTest
     private Mock<IDatalonApiClient> _datalonApiClientMock = null!;
 
     private SalaryCreated _salaryCreated = null!;
+    private SalaryExportFailed _salaryExportFailed = null!;
 
     private const string TranspaEmployeeId = "transpa-guid";
+    private const string TranspaSalaryGuid= "C86E80CF-1079-453B-AAA4-DC461A40C074";
+    internal const string StatusCodeForEmployeeNumberUnknown = "failedEmployeeNumberUnknown";
+    internal const string StatusCodeForEmployeeNumberBadFormat = "failedEmployeeNumberBadFormat";
+    private const string Host = "example.test"; 
 
     [SetUp]
     public void SetUp()
@@ -30,19 +35,22 @@ public class TranspaToDataLonTest
         _salaryCreated = new SalaryCreated(tenantId: "aaaa-bbbb-cccc-dddd", title: "A salary resource was created",
             resourceUrl: "https://example.test");
 
+
         _publicApiClientMock = new Mock<IPublicApiClient>();
         _datalonApiClientMock = new Mock<IDatalonApiClient>();
         _testee = new TranspaToDatalon(_publicApiClientMock.Object, _datalonApiClientMock.Object, 
-            new EmployeeValidator(new Mock<ILogger<DatalonApiClient>>().Object), new SalaryValidator(), new SalaryConverter(), new HttpObjectResultHelper());
+            new EmployeeValidator(), new SalaryValidator(), new SalaryConverter(), new HttpObjectResultHelper());
     }
 
     [Test]
     public async Task EmployeeNumberMissingShouldReturnBadRequest()
     {
         // Arrange
+        _salaryExportFailed = new SalaryExportFailed(StatusCodeForEmployeeNumberUnknown);
+        var salary = new Salary(employeeId: TranspaEmployeeId, id: TranspaSalaryGuid);
         var employeeNumberMissing = new Employee(employeeNumber: null);
         _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employeeNumberMissing);
-        _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(new Salary(employeeId: TranspaEmployeeId));
+        _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(salary);
 
         // Act
         var result = await _testee.ExportSalaryFromTranspaToDatalon(JsonConvert.SerializeObject(_salaryCreated),
@@ -51,6 +59,8 @@ public class TranspaToDataLonTest
         // Assert
         var response = (ObjectResult) result;
         response.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+
+        _publicApiClientMock.Verify(e => e.SetExportFailedAsync(Host, _salaryExportFailed, TranspaSalaryGuid), Times.Once);
     }
 
     [Test]
@@ -59,7 +69,10 @@ public class TranspaToDataLonTest
         // Arrange
         var employeeWithEmployeeNumberWithBadFormat = new Employee(employeeNumber: 24035);
         _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employeeWithEmployeeNumberWithBadFormat);
-        _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(new Salary(employeeId: TranspaEmployeeId));
+        Salary salary = new Salary(employeeId: TranspaEmployeeId, id: TranspaSalaryGuid);
+        _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(salary);
+        
+        _salaryExportFailed = new SalaryExportFailed(StatusCodeForEmployeeNumberBadFormat);
 
         // Act
         var result = await _testee.ExportSalaryFromTranspaToDatalon(JsonConvert.SerializeObject(_salaryCreated),
@@ -68,17 +81,19 @@ public class TranspaToDataLonTest
         // Assert
         var response = (ObjectResult) result;
         response.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        _publicApiClientMock.Verify(e => e.SetExportFailedAsync(Host, _salaryExportFailed, TranspaSalaryGuid), Times.Once);
+
     }
 
-    [TestCase(SalaryValidator.NoRowsExported, "", "")]
-    [TestCase(SalaryValidator.WageRowBadFormat, "12345", "")]
-    [TestCase(SalaryValidator.TimeRowBadFormat, "", "12345")]
-    public async Task NoPayCodeSetShouldReturnBadRequest(String expectedResult, string wageRowPayTypeCode, string timeRowPayTypeCode)
+    [TestCase(SalaryValidator.NoRowsExported, SalaryValidator.PayTypeCodeUnknown, "", "")]
+    [TestCase(SalaryValidator.WageRowBadFormat, SalaryValidator.PayTypeCodeBadFormat, "12345", "")]
+    [TestCase(SalaryValidator.TimeRowBadFormat, SalaryValidator.PayTypeCodeBadFormat, "", "12345")]
+    public async Task NoPayCodeSetShouldReturnBadRequest(String expectedResult, string errorCode, string wageRowPayTypeCode, string timeRowPayTypeCode)
     {
         // Arrange
         var employee = new Employee(employeeNumber: 240035);
         _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employee);
-        var salary = new Salary(employeeId: TranspaEmployeeId, wageRows: new List<SalaryWageRows>()
+        var salary = new Salary(employeeId: TranspaEmployeeId, id: TranspaSalaryGuid, wageRows: new List<SalaryWageRows>()
         {
             new SalaryWageRows(wageRowPayTypeCode, new Money(100, "SEK"), 200)
         }, timeRows: new List<SalaryTimeRows>()
@@ -86,6 +101,8 @@ public class TranspaToDataLonTest
             new SalaryTimeRows(timeRowPayTypeCode)
         });
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(salary);
+
+        _salaryExportFailed = new SalaryExportFailed(errorCode);
 
         // Act
         var result = await _testee.ExportSalaryFromTranspaToDatalon(JsonConvert.SerializeObject(_salaryCreated),
@@ -97,5 +114,6 @@ public class TranspaToDataLonTest
         response.Value.GetType().Should().Be(typeof(ProblemDetails));
         var details = (ProblemDetails)response.Value;
         details.Detail.Should().Be(expectedResult);
+        _publicApiClientMock.Verify(e => e.SetExportFailedAsync(Host, _salaryExportFailed, TranspaSalaryGuid), Times.Once);
     }
 }

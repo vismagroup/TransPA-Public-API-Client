@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using transpa.api.generated.Model;
 using TransPA.OpenSource.Constants;
 using TransPA.OpenSource.External.Datalon;
+using TransPA.OpenSource.External.Datalon.Model;
 
 namespace TransPA.OpenSource.Functions
 {
@@ -20,7 +21,9 @@ namespace TransPA.OpenSource.Functions
         private readonly SalaryConverter _salaryConverter;
         private readonly HttpObjectResultHelper _httpObjectResultHelper;
 
-        public TranspaToDatalon(IPublicApiClient publicApiClient, IDatalonApiClient datalonApiClient, 
+        internal const string FailedUnspecified = "failedUnspecified";
+
+        public TranspaToDatalon(IPublicApiClient publicApiClient, IDatalonApiClient datalonApiClient,
             EmployeeValidator employeeValidator, SalaryValidator salaryValidator, SalaryConverter salaryConverter, HttpObjectResultHelper httpObjectResultHelper)
         {
             _publicApiClient = publicApiClient;
@@ -30,6 +33,7 @@ namespace TransPA.OpenSource.Functions
             _salaryConverter = salaryConverter;
             _httpObjectResultHelper = httpObjectResultHelper;
         }
+
 
         [FunctionName("DataLon")]
         public async Task<IActionResult> ExportSalaryFromTranspaToDatalon(
@@ -60,14 +64,18 @@ namespace TransPA.OpenSource.Functions
             var employeeValidationResult = await _employeeValidator.ValidateAsync(employee);
             if (!employeeValidationResult.IsValid)
             {
-                // TODO: Report back handled error here in a later ticket
+                var salaryExportFailed = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
+                await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
+
                 return _httpObjectResultHelper.GetBadRequestResult("EmployeeNumber is not properly configured in TransPA");
             }
 
             var salaryValidationResult = await _salaryValidator.ValidateAsync(salary);
             if (!salaryValidationResult.IsValid)
             {
-                // TODO: Report back handled error here in a later ticket
+                var salaryExportFailed = new SalaryExportFailed(salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
+                await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
+
                 return _httpObjectResultHelper.GetBadRequestResult(salaryValidationResult.Errors.First().ErrorMessage);
             }
 
@@ -80,23 +88,32 @@ namespace TransPA.OpenSource.Functions
                 throw new Exception("Missing DataLon refreshToken");
             }
 
-            await _datalonApiClient
-                .SetAuthenticationHeader(
-                    environmentVariable); // TODO: Have to be reworked to be able to handle different tenants/refresh tokens (singleton problem) - TPA-2658
+            try
+            {
+                await _datalonApiClient
+                    .SetAuthenticationHeader(
+                        environmentVariable); // TODO: Have to be reworked to be able to handle different tenants/refresh tokens (singleton problem) - TPA-2658
 
-            var datalonEmployerId = await _datalonApiClient.GetEmployerId();
-            var datalonEmployeeId = await _datalonApiClient.GetEmployeeIdAsync(employeeNumberAsString, datalonEmployerId);
+                var datalonEmployerId = await _datalonApiClient.GetEmployerId();
+                var datalonEmployeeId = await _datalonApiClient.GetEmployeeIdAsync(employeeNumberAsString, datalonEmployerId);
 
-            var existingFormsForEmployee = await _datalonApiClient.GetFormsForEmployee(salary, datalonEmployerId, datalonEmployeeId);
-            await Parallel.ForEachAsync(existingFormsForEmployee,
-                async (form, cancellationToken) => await _datalonApiClient.ArchiveForm(form.FormId, datalonEmployerId));
+                var existingFormsForEmployee = await _datalonApiClient.GetFormsForEmployee(salary, datalonEmployerId, datalonEmployeeId);
+                await Parallel.ForEachAsync(existingFormsForEmployee,
+                    async (form, cancellationToken) => await _datalonApiClient.ArchiveForm(form.FormId, datalonEmployerId));
 
-            var convert = _salaryConverter.Convert(salary, datalonEmployeeId);
-            await _datalonApiClient.CommitForm(convert, datalonEmployerId);
+                var convert = _salaryConverter.Convert(salary, datalonEmployeeId);
+                await _datalonApiClient.CommitForm(convert, datalonEmployerId);
+            }
+            catch (Exception ex)
+            {
+                await _publicApiClient.SetExportFailedAsync(uri.Host, new SalaryExportFailed { StatusCode = FailedUnspecified }, salary.Id);
+                log.LogError("Failed in an unexpected way.", ex);
+                throw;
+            }
 
-            return
-                new OkObjectResult(existingFormsForEmployee
-                    .Count); // Remark: TransPA will not do anything with the return code here. It's essential that you report the status via the API.
+            await _publicApiClient.SetExportSuccessAsync(uri.Host, salary.Id);
+
+            return new OkObjectResult("");
         }
     }
 }

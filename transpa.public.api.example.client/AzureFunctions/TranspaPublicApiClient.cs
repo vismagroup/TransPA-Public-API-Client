@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using transpa.api.generated.Model;
@@ -15,6 +17,8 @@ public interface IPublicApiClient
     Task SetAuthenticationHeaderAsync(string tenantId);
     Task<Salary> GetSalaryAsync(SalaryCreated salaryCreated);
     Task<Employee> GetEmployeeAsync(string salaryEmployeeId, string resourceUrl);
+    Task<bool> SetExportFailedAsync(string hostUrl, SalaryExportFailed salaryExportFailed, string salaryId);
+    Task<bool> SetExportSuccessAsync(string hostUrl, string salaryId);
 }
 
 public class PublicApiClient : IPublicApiClient
@@ -63,7 +67,7 @@ public class PublicApiClient : IPublicApiClient
         }
 
         var body =
-            $"grant_type=client_credentials&transpaapi:salaries:read+transpaapi:api+transpaapi:employees:read&client_id={clientId}&client_secret={clientSecret}&tenant_id={tenantId}";
+            $"grant_type=client_credentials&transpaapi:salaries:read+transpaapi:api+transpaapi:employees+transpaapi:salaries:write:read&client_id={clientId}&client_secret={clientSecret}&tenant_id={tenantId}";
 
         var request = new HttpRequestMessage(HttpMethod.Post, GetBearerTokenUrl());
         request.Headers.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
@@ -142,6 +146,63 @@ public class PublicApiClient : IPublicApiClient
         }
 
         throw new Exception("Failed to read employee");
+    }
+
+    public async Task<bool> SetExportFailedAsync(string hostUrl, SalaryExportFailed salaryExportFailed, string salaryId)
+    {
+        var setExportFailedUrl = $"https://{hostUrl}/publicApi/v1/salaries/{salaryId}/setExportFailed";
+
+        var stringContent = new StringContent(JsonConvert.SerializeObject(salaryExportFailed), Encoding.UTF8, "application/json");
+        var httpResponseMessage = await _client.PostAsync(setExportFailedUrl, stringContent);
+        switch (httpResponseMessage.StatusCode)
+        {
+            case HttpStatusCode.Forbidden:
+            case HttpStatusCode.BadRequest:
+            case HttpStatusCode.Conflict:
+                var jsonBody = await httpResponseMessage.Content.ReadAsStringAsync();
+                var responseBody = JsonConvert.DeserializeObject<ProblemDetails>(jsonBody);
+                _log.LogError($"Response detail: {responseBody.Detail}, status:{responseBody.Status}");
+                break;
+            case HttpStatusCode.NotFound:
+                _log.LogError($"Salary {salaryId} not found!");
+                break;
+            case HttpStatusCode.NoContent:
+                _log.LogInformation("Export set as failed.");
+                return true;
+            default:
+                _log.LogError($"Unexpected error occured when setting the export as failed. HttpStatusCode: {httpResponseMessage.StatusCode}");
+                break;
+        }
+
+        throw new Exception("Failed to set export as failed!");
+    }
+
+    public async Task<bool> SetExportSuccessAsync(string hostUrl, string salaryId)
+    {
+        var setExportSuccessUrl = $"https://{hostUrl}/publicApi/v1/salaries/{salaryId}/setExportSuccess";
+
+        var httpResponseMessage = await _client.PostAsync(setExportSuccessUrl, null);
+        switch (httpResponseMessage.StatusCode)
+        {
+            case HttpStatusCode.Forbidden:
+            case HttpStatusCode.BadRequest:
+            case HttpStatusCode.Conflict:
+                var jsonBody = await httpResponseMessage.Content.ReadAsStringAsync();
+                var responseBody = JsonConvert.DeserializeObject<ProblemDetails>(jsonBody);
+                _log.LogError($"Response detail: {responseBody.Detail}, status:{responseBody.Status}");
+                break;
+            case HttpStatusCode.NotFound:
+                _log.LogError($"Salary {salaryId} not found!");
+                break;
+            case HttpStatusCode.NoContent:
+                _log.LogInformation("Export set as successful.");
+                return true;
+            default:
+                _log.LogError($"Unexpected error occured when setting the export as successful. HttpStatusCode: {httpResponseMessage.StatusCode}");
+                break;
+        }
+
+        throw new Exception("Failed to set export as successful!");
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]

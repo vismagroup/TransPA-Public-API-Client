@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -25,14 +25,14 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       </None>
-    </ItemGroup>
-
+    </ItemGroup> 
+    
     <ItemGroup>
       <ProjectReference Include="..\..\oas.generated\src\transpa.api.generated\transpa.api.generated.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="External" />
+        <Folder Include="External" />
     </ItemGroup>
 
     <ItemGroup>
