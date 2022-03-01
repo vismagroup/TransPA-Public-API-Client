@@ -35,16 +35,16 @@ public class SalaryConverterTest
         // Arrange 
         var salary = new Salary()
         {
-            WageRows = new List<SalaryWageRows>()
+            WageRows = new List<WageRow>()
             {
-                new SalaryWageRows()
+                new WageRow()
                 {
                     Quantity = Quantity,
                     UnitPrice = new Money(UnitPrice, "DKK"),
                     PayTypeCode = PayTypeCode
                 }
             },
-            TimeRows = new List<SalaryTimeRows>()
+            TimeRows = new List<TimeRow>()
         };
 
         // Act
@@ -71,15 +71,15 @@ public class SalaryConverterTest
         // Arrange 
         var salary = new Salary()
         {
-            WageRows = new List<SalaryWageRows>(),
-            TimeRows = new List<SalaryTimeRows>()
+            WageRows = new List<WageRow>(),
+            TimeRows = new List<TimeRow>()
             {
-                new SalaryTimeRows()
+                new TimeRow()
                 {
                     PayTypeCode = PayTypeCodeTimeRow,
-                    Details = new List<SalaryDetails1>()
+                    Details = new List<TimeRowDetails>()
                     {
-                        new SalaryDetails1()
+                        new TimeRowDetails()
                         {
                             Quantity = TimeRowQuantity
                         }
@@ -108,16 +108,16 @@ public class SalaryConverterTest
         // Arrange 
         var salary = new Salary()
         {
-            WageRows = new List<SalaryWageRows>()
+            WageRows = new List<WageRow>()
             {
-                new SalaryWageRows()
+                new WageRow()
                 {
                     PayTypeCode = ""
                 }
             },
-            TimeRows = new List<SalaryTimeRows>()
+            TimeRows = new List<TimeRow>()
             {
-                new SalaryTimeRows()
+                new TimeRow()
                 {
                     PayTypeCode = ""
                 }
