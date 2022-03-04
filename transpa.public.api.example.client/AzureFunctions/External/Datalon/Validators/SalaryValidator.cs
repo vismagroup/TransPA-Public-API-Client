@@ -18,12 +18,12 @@ public class SalaryValidator : AbstractValidator<Salary>
         RuleFor(x => x).Must(ValidateThatThereIsAtLeastOneRowBeingExported).WithMessage(NoRowsExported).WithErrorCode(PayTypeCodeUnknown);
     }
 
-    private bool ValidatePayTypeCode(List<SalaryWageRows> salaryWageRows)
+    private bool ValidatePayTypeCode(List<WageRow> salaryWageRows)
     {
         return salaryWageRows.Any(x => x.PayTypeCode.Length is 0 or 4);
     }
 
-    private bool ValidatePayTypeCode(List<SalaryTimeRows> salaryTimeRows)
+    private bool ValidatePayTypeCode(List<TimeRow> salaryTimeRows)
     {
         return salaryTimeRows.Any(x => x.PayTypeCode.Length is 0 or 4);
     }

@@ -64,26 +64,26 @@ namespace AzureFunctions.Test.Validators
             };
         }
 
-        private List<SalaryWageRows> CreateSalaryWageRow(string payTypeCodeForWageRow)
+        private List<WageRow> CreateSalaryWageRow(string payTypeCodeForWageRow)
         {
-            return new List<SalaryWageRows>
+            return new List<WageRow>
             {
-                new SalaryWageRows() {
+                new WageRow() {
                 PayTypeCode = payTypeCodeForWageRow,
                 Quantity = 5,
                 UnitPrice = new Money(100, "SEK"),
-                Details = new List<SalaryDetails>(),
+                Details = new List<WageRowDetails>(),
                 }
             };
         }
 
-        private List<SalaryTimeRows> CreateSalaryTimeRow(string payTypeCodeForWageRow)
+        private List<TimeRow> CreateSalaryTimeRow(string payTypeCodeForWageRow)
         {
-            return new List<SalaryTimeRows>
+            return new List<TimeRow>
             {
-                new SalaryTimeRows() {
+                new TimeRow() {
                     PayTypeCode = payTypeCodeForWageRow,
-                    Details = new List<SalaryDetails1>(),
+                    Details = new List<TimeRowDetails>(),
                 }
             };
         }

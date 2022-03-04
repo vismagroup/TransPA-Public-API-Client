@@ -44,21 +44,21 @@ public class SalaryConverter
         return entries;
     }
 
-    private Entry GetWageRowQuantityEntry(string employeeId, SalaryWageRows salaryWageRows)
+    private Entry GetWageRowQuantityEntry(string employeeId, WageRow salaryWageRows)
     {
         var entry = GetEntry(employeeId, salaryWageRows.Quantity);
         entry.PayTypeCode = $"00{salaryWageRows.PayTypeCode.Substring(0, 2)}";
         return entry;
     }
     
-    private Entry GetWageRowUnitPriceEntry(string employeeId, SalaryWageRows salaryWageRows)
+    private Entry GetWageRowUnitPriceEntry(string employeeId, WageRow salaryWageRows)
     {
         var entry = GetEntry(employeeId, salaryWageRows.UnitPrice.Amount);
         entry.PayTypeCode = $"00{salaryWageRows.PayTypeCode.Substring(2, 2)}";
         return entry;
     }
     
-    private Entry GetTimeRowQuantityEntry(string employeeId, SalaryTimeRows salaryTimeRows)
+    private Entry GetTimeRowQuantityEntry(string employeeId, TimeRow salaryTimeRows)
     {
         var sum = salaryTimeRows.Details.Sum(x => x.Quantity);
         var entry = GetEntry(employeeId, sum);

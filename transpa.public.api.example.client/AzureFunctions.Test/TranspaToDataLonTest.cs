@@ -93,12 +93,12 @@ public class TranspaToDataLonTest
         // Arrange
         var employee = new Employee(employeeNumber: 240035);
         _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employee);
-        var salary = new Salary(employeeId: TranspaEmployeeId, id: TranspaSalaryGuid, wageRows: new List<SalaryWageRows>()
+        var salary = new Salary(employeeId: TranspaEmployeeId, id: TranspaSalaryGuid, wageRows: new List<WageRow>()
         {
-            new SalaryWageRows(wageRowPayTypeCode, new Money(100, "SEK"), 200)
-        }, timeRows: new List<SalaryTimeRows>()
+            new WageRow(wageRowPayTypeCode, new Money(100, "SEK"), 200)
+        }, timeRows: new List<TimeRow>()
         {
-            new SalaryTimeRows(timeRowPayTypeCode)
+            new TimeRow(timeRowPayTypeCode)
         });
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(salary);
 
