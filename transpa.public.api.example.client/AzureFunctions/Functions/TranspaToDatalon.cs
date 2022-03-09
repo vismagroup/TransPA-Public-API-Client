@@ -84,6 +84,7 @@ namespace TransPA.OpenSource.Functions
 
             if (!req.Headers.TryGetValue(DatalonApiConfigurationNameConstants.RefreshToken, out var datalonRefreshToken))
             { // If you use a access token with tenant this could be replaced with tenant id, or you may do this mapping on your end
+                log.LogError("Refresh token is not provided");
                 var salaryExportFailed = new SalaryExportFailed(FailedUnspecified, "Refresh token is not configured");
                 await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
             }
