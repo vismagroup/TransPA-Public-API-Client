@@ -64,7 +64,7 @@ namespace TransPA.OpenSource.Functions
             var employeeValidationResult = await _employeeValidator.ValidateAsync(employee);
             if (!employeeValidationResult.IsValid)
             {
-                var salaryExportFailed = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
+                var salaryExportFailed = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault(), string.Empty);
                 await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
 
                 return _httpObjectResultHelper.GetBadRequestResult("EmployeeNumber is not properly configured in TransPA");
@@ -73,7 +73,7 @@ namespace TransPA.OpenSource.Functions
             var salaryValidationResult = await _salaryValidator.ValidateAsync(salary);
             if (!salaryValidationResult.IsValid)
             {
-                var salaryExportFailed = new SalaryExportFailed(salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
+                var salaryExportFailed = new SalaryExportFailed(salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault(), string.Empty);
                 await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
 
                 return _httpObjectResultHelper.GetBadRequestResult(salaryValidationResult.Errors.First().ErrorMessage);
@@ -106,7 +106,8 @@ namespace TransPA.OpenSource.Functions
             }
             catch (Exception ex)
             {
-                await _publicApiClient.SetExportFailedAsync(uri.Host, new SalaryExportFailed { StatusCode = FailedUnspecified }, salary.Id);
+                var salaryExportFailed = new SalaryExportFailed(FailedUnspecified, string.Empty);
+                await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
                 log.LogError("Failed in an unexpected way.", ex);
                 throw;
             }
