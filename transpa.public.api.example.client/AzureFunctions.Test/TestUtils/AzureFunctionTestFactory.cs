@@ -22,6 +22,14 @@ public class AzureFunctionTestFactory
         request.Query = new QueryCollection(CreateDictionary(queryParameter));
         return request;
     }
+    
+    public static HttpRequest CreateHttpRequestWithHeaders(List<Tuple<string, string>> headers)
+    {
+        var context = new DefaultHttpContext();
+        var request = context.Request;
+        headers.ForEach(h => request.Headers.Add(h.Item1, h.Item2)); 
+        return request;
+    }
 
     public static ILogger CreateLogger(LoggerTypes type = LoggerTypes.Null)
     {
