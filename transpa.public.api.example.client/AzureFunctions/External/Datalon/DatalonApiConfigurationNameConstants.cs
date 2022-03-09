@@ -3,7 +3,7 @@
 public class DatalonApiConfigurationNameConstants
 {
     public const string OcpApimSubscriptionKey = "datalonOcpApimSubscriptionKey";
-    public const string RefreshToken = "datalonRefreshToken";
+    public const string RefreshToken = "DatalonRefreshToken";
     public const string DatalonOauthApiHost = "datalonOauthApiHost";
     public const string DatalonApiHost = "datalonApiHost";
     
