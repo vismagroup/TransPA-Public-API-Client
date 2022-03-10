@@ -46,7 +46,7 @@ public class TranspaToDataLonTest
     public async Task EmployeeNumberMissingShouldReturnBadRequest()
     {
         // Arrange
-        _salaryExportFailed = new SalaryExportFailed(StatusCodeForEmployeeNumberUnknown, string.Empty);
+        _salaryExportFailed = new SalaryExportFailed(StatusCodeForEmployeeNumberUnknown);
         var salary = new Salary(employeeId: TranspaEmployeeId, id: TranspaSalaryGuid);
         var employeeNumberMissing = new Employee(employeeNumber: null);
         _publicApiClientMock.Setup(x => x.GetEmployeeAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(employeeNumberMissing);
@@ -72,7 +72,7 @@ public class TranspaToDataLonTest
         Salary salary = new Salary(employeeId: TranspaEmployeeId, id: TranspaSalaryGuid);
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(salary);
         
-        _salaryExportFailed = new SalaryExportFailed(StatusCodeForEmployeeNumberBadFormat, string.Empty);
+        _salaryExportFailed = new SalaryExportFailed(StatusCodeForEmployeeNumberBadFormat);
 
         // Act
         var result = await _testee.ExportSalaryFromTranspaToDatalon(JsonConvert.SerializeObject(_salaryCreated),
@@ -102,7 +102,7 @@ public class TranspaToDataLonTest
         });
         _publicApiClientMock.Setup(x => x.GetSalaryAsync(_salaryCreated)).ReturnsAsync(salary);
 
-        _salaryExportFailed = new SalaryExportFailed(errorCode, string.Empty);
+        _salaryExportFailed = new SalaryExportFailed(errorCode);
 
         // Act
         var result = await _testee.ExportSalaryFromTranspaToDatalon(JsonConvert.SerializeObject(_salaryCreated),
