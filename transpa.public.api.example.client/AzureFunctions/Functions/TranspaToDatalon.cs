@@ -87,6 +87,8 @@ namespace TransPA.OpenSource.Functions
                 log.LogError("Refresh token is not provided");
                 var salaryExportFailed = new SalaryExportFailed(FailedUnspecified, "Refresh token is not configured");
                 await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
+
+                return _httpObjectResultHelper.GetBadRequestResult("Refresh token is not configured");
             }
 
             try
