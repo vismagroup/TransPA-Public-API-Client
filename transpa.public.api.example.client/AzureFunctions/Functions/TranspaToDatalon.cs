@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using transpa.api.generated.Model;
 using TransPA.OpenSource.Constants;
@@ -95,18 +96,18 @@ namespace TransPA.OpenSource.Functions
 
             var employeeNumberAsString = employee.EmployeeNumber!.Value.ToString();
 
-            var environmentVariable = Environment.GetEnvironmentVariable(DatalonApiConfigurationNameConstants.RefreshToken) ?? "";
-            if (String.IsNullOrEmpty(environmentVariable))
-            {
-                log.LogError("Missing DataLon refreshToken");
-                throw new Exception("Missing DataLon refreshToken");
+            if (!req.Headers.TryGetValue(DatalonApiConfigurationNameConstants.RefreshToken, out var datalonRefreshToken))
+            { // If you use a access token with tenant this could be replaced with tenant id, or you may do this mapping on your end
+                log.LogError("Refresh token is not provided");
+                var salaryExportFailed = new SalaryExportFailed(FailedUnspecified, "Refresh token is not configured");
+                await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
             }
 
             try
             {
                 await _datalonApiClient
                     .SetAuthenticationHeader(
-                        environmentVariable); // TODO: Have to be reworked to be able to handle different tenants/refresh tokens (singleton problem) - TPA-2658
+                        datalonRefreshToken); // TODO: Have to be reworked to be able to handle different tenants/refresh tokens (singleton problem) - TPA-2658
 
                 var datalonEmployerId = await _datalonApiClient.GetEmployerId();
                 var datalonEmployeeId = await _datalonApiClient.GetEmployeeIdAsync(employeeNumberAsString, datalonEmployerId);
