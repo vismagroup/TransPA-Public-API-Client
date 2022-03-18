@@ -79,7 +79,7 @@ namespace TransPA.OpenSource.Functions
             var employeeValidationResult = await _employeeValidator.ValidateAsync(employee);
             if (!employeeValidationResult.IsValid)
             {
-                var salaryExportFailed = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault(), string.Empty);
+                var salaryExportFailed = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
                 await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
 
                 return _httpObjectResultHelper.GetBadRequestResult("EmployeeNumber is not properly configured in TransPA");
@@ -88,7 +88,7 @@ namespace TransPA.OpenSource.Functions
             var salaryValidationResult = await _salaryValidator.ValidateAsync(salary);
             if (!salaryValidationResult.IsValid)
             {
-                var salaryExportFailed = new SalaryExportFailed(salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault(), string.Empty);
+                var salaryExportFailed = new SalaryExportFailed(salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
                 await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
 
                 return _httpObjectResultHelper.GetBadRequestResult(salaryValidationResult.Errors.First().ErrorMessage);
@@ -101,6 +101,8 @@ namespace TransPA.OpenSource.Functions
                 log.LogError("Refresh token is not provided");
                 var salaryExportFailed = new SalaryExportFailed(FailedUnspecified, "Refresh token is not configured");
                 await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
+
+                return _httpObjectResultHelper.GetBadRequestResult("Refresh token is not configured");
             }
 
             try
