@@ -6,4 +6,5 @@ public class TranspaPublicApiConfigurationNameConstants
     public const string PublicAPIClientId = "publicApiClientId";
     public const string PublicAPIClientSecret = "publicApiClientSecret";
     public const string OcpApimSubscriptionKey = "ocpApimSubscriptionKey";
+    public const string WebhookSecret = "webhookSecret";
 }

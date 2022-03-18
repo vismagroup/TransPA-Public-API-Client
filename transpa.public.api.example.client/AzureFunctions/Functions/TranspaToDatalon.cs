@@ -42,12 +42,26 @@ namespace TransPA.OpenSource.Functions
             string body, HttpRequest req, ILogger log)
         {
             /*
+             * We recommend that you protect your webhook with some basic authentication that is setup'ed via custom headers when
+             * registering the webhook.
+             *
+             * The webhook does not receive personal data in the request body, but will have access to both systems and could be a potential attack surface.
+             */
+            var secret = Environment.GetEnvironmentVariable(TranspaPublicApiConfigurationNameConstants.WebhookSecret);
+            if (String.IsNullOrEmpty(secret) || !req.Headers.TryGetValue("Authorization", out var authorizationHeaderValue) || !secret.Equals(authorizationHeaderValue))
+            {
+                log.LogError("No authorization header was provided");
+                return new StatusCodeResult(403);
+            }
+            
+            /*
              * Read data from TransPA Public API.
              */
             var salaryCreated = JsonConvert.DeserializeObject<SalaryCreated>(body);
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (salaryCreated == null)
             {
+                log.LogError("Failed to parse the json body");
                 return _httpObjectResultHelper.GetBadRequestResult("Failed parsing request body");
             }
 
