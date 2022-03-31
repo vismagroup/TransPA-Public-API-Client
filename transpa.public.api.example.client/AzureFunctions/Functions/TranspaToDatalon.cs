@@ -53,7 +53,7 @@ namespace TransPA.OpenSource.Functions
                 log.LogError("No authorization header was provided");
                 return new StatusCodeResult(403);
             }
-            
+
             /*
              * Read data from TransPA Public API.
              */
@@ -68,45 +68,47 @@ namespace TransPA.OpenSource.Functions
             await _publicApiClient.SetAuthenticationHeaderAsync(salaryCreated
                 .TenantId); // TODO: Have to be reworked to be able to handle different tenants (singleton problem) - TPA-2658
 
+
             var salary = await _publicApiClient.GetSalaryAsync(salaryCreated);
-
             var uri = new Uri(salaryCreated.ResourceUrl);
-            var employee = await _publicApiClient.GetEmployeeAsync(salary.EmployeeId, uri.Host);
-
-            /*
-             * Integration specific
-             */
-            var employeeValidationResult = await _employeeValidator.ValidateAsync(employee);
-            if (!employeeValidationResult.IsValid)
-            {
-                var salaryExportFailed = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
-                await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
-
-                return _httpObjectResultHelper.GetBadRequestResult("EmployeeNumber is not properly configured in TransPA");
-            }
-
-            var salaryValidationResult = await _salaryValidator.ValidateAsync(salary);
-            if (!salaryValidationResult.IsValid)
-            {
-                var salaryExportFailed = new SalaryExportFailed(salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
-                await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
-
-                return _httpObjectResultHelper.GetBadRequestResult(salaryValidationResult.Errors.First().ErrorMessage);
-            }
-
-            var employeeNumberAsString = employee.EmployeeNumber!.Value.ToString();
-
-            if (!req.Headers.TryGetValue(DatalonApiConfigurationNameConstants.RefreshToken, out var datalonRefreshToken))
-            { // If you use a access token with tenant this could be replaced with tenant id, or you may do this mapping on your end
-                log.LogError("Refresh token is not provided");
-                var salaryExportFailed = new SalaryExportFailed(FailedUnspecified, "Refresh token is not configured");
-                await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
-
-                return _httpObjectResultHelper.GetBadRequestResult("Refresh token is not configured");
-            }
 
             try
             {
+                var employee = await _publicApiClient.GetEmployeeAsync(salary.EmployeeId, uri.Host);
+
+                /*
+                 * Integration specific
+                 */
+                var employeeValidationResult = await _employeeValidator.ValidateAsync(employee);
+                if (!employeeValidationResult.IsValid)
+                {
+                    var salaryExportFailed = new SalaryExportFailed(employeeValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
+                    await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
+
+                    return _httpObjectResultHelper.GetBadRequestResult("EmployeeNumber is not properly configured in TransPA");
+                }
+
+                var salaryValidationResult = await _salaryValidator.ValidateAsync(salary);
+                if (!salaryValidationResult.IsValid)
+                {
+                    var salaryExportFailed = new SalaryExportFailed(salaryValidationResult.Errors.Select(x => x.ErrorCode).FirstOrDefault());
+                    await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
+
+                    return _httpObjectResultHelper.GetBadRequestResult(salaryValidationResult.Errors.First().ErrorMessage);
+                }
+
+                var employeeNumberAsString = employee.EmployeeNumber!.Value.ToString();
+
+                if (!req.Headers.TryGetValue(DatalonApiConfigurationNameConstants.RefreshToken, out var datalonRefreshToken))
+                { // If you use a access token with tenant this could be replaced with tenant id, or you may do this mapping on your end
+                    log.LogError("Refresh token is not provided");
+                    var salaryExportFailed = new SalaryExportFailed(FailedUnspecified, "Refresh token is not configured");
+                    await _publicApiClient.SetExportFailedAsync(uri.Host, salaryExportFailed, salary.Id);
+
+                    return _httpObjectResultHelper.GetBadRequestResult("Refresh token is not configured");
+                }
+
+
                 await _datalonApiClient
                     .SetAuthenticationHeader(
                         datalonRefreshToken); // TODO: Have to be reworked to be able to handle different tenants/refresh tokens (singleton problem) - TPA-2658

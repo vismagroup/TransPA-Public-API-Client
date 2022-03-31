@@ -162,7 +162,7 @@ public class PublicApiClient : IPublicApiClient
                 var jsonBody = await httpResponseMessage.Content.ReadAsStringAsync();
                 var responseBody = JsonConvert.DeserializeObject<ProblemDetails>(jsonBody);
                 _log.LogError($"Response detail: {responseBody.Detail}, status:{responseBody.Status}");
-                break;
+                return false;
             case HttpStatusCode.NotFound:
                 _log.LogError($"Salary {salaryId} not found!");
                 break;
@@ -190,7 +190,7 @@ public class PublicApiClient : IPublicApiClient
                 var jsonBody = await httpResponseMessage.Content.ReadAsStringAsync();
                 var responseBody = JsonConvert.DeserializeObject<ProblemDetails>(jsonBody);
                 _log.LogError($"Response detail: {responseBody.Detail}, status:{responseBody.Status}");
-                break;
+                return false;
             case HttpStatusCode.NotFound:
                 _log.LogError($"Salary {salaryId} not found!");
                 break;
