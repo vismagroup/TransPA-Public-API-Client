@@ -7,5 +7,5 @@ Welcome to our GitHub page! Here you can find examples on how to integrate with 
 
 
 ## Code examples
-- [Postman - How to Authenticate][examples/Postman]
-- [C# - Salary export example with WebHook][transpa.public.api.example.client]
+- [Postman - How to Authenticate](examples/Postman)
+- [C# - Salary export example with WebHook](transpa.public.api.example.client)
