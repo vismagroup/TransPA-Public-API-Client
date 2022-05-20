@@ -4,7 +4,7 @@ Welcome to our GitHub page! Here you can find examples on how to integrate with 
 ## Resources
 - [Visma for Developers](https://developer.visma.com/api/) (General information and sign up for access) This link is not working yet
 - [Open API Specification](https://api.mytranspa.com/doc/openapi/swaggerui/)
-
+- [Frequently asked questions](FAQ.md)
 
 ## Code examples
 - [Postman - How to Authenticate](examples/Postman)
