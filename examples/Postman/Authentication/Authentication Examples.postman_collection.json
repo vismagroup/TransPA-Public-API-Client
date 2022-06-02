@@ -1,0 +1,179 @@
+{
+	"info": {
+		"_postman_id": "1dc4b51f-b503-4089-b409-087474dd67d2",
+		"name": "Authentication Examples",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Basic",
+			"item": [
+				{
+					"name": "Get Access Token (Bearer token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"console.log(jsonData)\r",
+									"console.log(jsonData.access_token)\r",
+									"pm.globals.set(\"accessToken\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "client_id={{clientId}}&client_secret={{clientSecret}}&grant_type=client_credentials&scope=transpaapi:api&tenant_id={{tenantId}}"
+						},
+						"url": {
+							"raw": "https://connect.visma.com/connect/token",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"visma",
+								"com"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alive call - verifies general access to the API",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.mytranspa.com/publicApi/v1/alive?Authorization=Bearer {{accessToken}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mytranspa",
+								"com"
+							],
+							"path": [
+								"publicApi",
+								"v1",
+								"alive"
+							],
+							"query": [
+								{
+									"key": "Authorization",
+									"value": "Bearer {{accessToken}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Example - Vehicle resource",
+			"item": [
+				{
+					"name": "Get Access Token (Bearer token) - with more scopes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"console.log(jsonData)\r",
+									"console.log(jsonData.access_token)\r",
+									"pm.globals.set(\"accessTokenWithVehicleScope\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "client_id={{clientId}}&client_secret={{clientSecret}}&grant_type=client_credentials&scope=transpaapi:api+transpaapi:vehicles:read&tenant_id={{tenantId}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://connect.visma.com/connect/token",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"visma",
+								"com"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get vehicles call",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.mytranspa.com/publicApi/v1/vehicles",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mytranspa",
+								"com"
+							],
+							"path": [
+								"publicApi",
+								"v1",
+								"vehicles"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
