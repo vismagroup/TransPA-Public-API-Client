@@ -1,5 +1,5 @@
 # Salary export example
-This example shows how you can export salary information via TransPA Public API into another system. This example is an actual integration that is being used. It integrates between the TransPA Public API and another Visma API.
+This example shows how you can export salary information via Visma TransPA Public API into another system. This example is an actual integration that is being used. It integrates between the TransPA Public API and another Visma API.
 The implementation is a .Net 6 leveraging Azure Functions that acts as a WebHook.
 
 ## Generate code
